@@ -1,0 +1,52 @@
+/* Estilos específicos del componente Login */
+.w-full {
+  width: 100%;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+/* SOLUCIÓN DEFINITIVA - Contenedor de contraseña */
+::ng-deep .p-password {
+  position: relative !important;
+  width: 100% !important;
+  overflow: visible !important;
+}
+/* Campo de entrada de contraseña */
+::ng-deep .p-password .p-inputtext {
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border: 2px solid #e1e5e9 !important;
+  border-radius: var(--hospital-border-radius) !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  background: var(--hospital-white) !important;
+  box-sizing: border-box !important;
+}
+::ng-deep .p-password-icon {
+  right: 1.5rem !important;
+}
+
+
+/* Personalización adicional para PrimeNG */
+::ng-deep .p-button.p-button-icon-only {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+::ng-deep .p-button.p-button-outlined {
+  border-color: var(--hospital-primary);
+  color: var(--hospital-primary);
+}
+
+::ng-deep .p-button.p-button-outlined:hover {
+  background: var(--hospital-primary);
+  border-color: var(--hospital-primary);
+  color: white;
+}
+
+::ng-deep .p-checkbox .p-checkbox-box.p-highlight {
+  background: var(--hospital-primary);
+  border-color: var(--hospital-primary);
+}

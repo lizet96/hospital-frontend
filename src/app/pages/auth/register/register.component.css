@@ -1,0 +1,84 @@
+/* Estilos específicos del componente Register */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group.half-width {
+  margin-bottom: 0;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+/* Personalización de PrimeNG */
+::ng-deep .p-checkbox .p-checkbox-box.p-highlight {
+  background: var(--hospital-primary);
+  border-color: var(--hospital-primary);
+}
+
+::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label {
+  padding: 0.75rem 1rem;
+}
+
+::ng-deep .custom-dropdown-panel .p-dropdown-item:hover {
+  background: var(--hospital-light);
+  color: var(--hospital-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .form-group.half-width {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-row:last-of-type .form-group.half-width:last-child {
+    margin-bottom: 0.75rem;
+  }
+}
+
+
+/* Aplicar estilos a todos los campos de PrimeNG - MEJORADO PARA CALENDARIO */
+::ng-deep .p-calendar .p-inputtext,
+::ng-deep .p-password .p-inputtext {
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border: 2px solid #e1e5e9 !important;
+  border-radius: var(--hospital-border-radius) !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  background: var(--hospital-white) !important;
+  box-sizing: border-box !important;
+}
+
+::ng-deep .p-calendar .p-inputtext:focus,
+::ng-deep .p-password .p-inputtext:focus {
+  outline: none !important;
+  border-color: var(--hospital-primary) !important;
+  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1) !important;
+}
+
+::ng-deep .p-password-icon {
+  right: 1.5rem !important;
+}
+
+
+
+
+

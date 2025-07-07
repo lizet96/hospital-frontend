@@ -1,1 +1,170 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'primeicons/primeicons.css';
+
+/* Variables CSS para tema hospitalario */
+:root {
+  --hospital-primary: #05685e;
+  --hospital-secondary: #05685e;
+  --hospital-accent: #0cab9b;
+  --hospital-success: #27ae60;
+  --hospital-warning: #f39c12;
+  --hospital-danger: #e74c3c;
+  --hospital-light: #ecf0f1;
+  --hospital-dark: #2c3e50;
+  --hospital-white: #ffffff;
+  --hospital-gray-light: #f8f9fa;
+  --hospital-gray: #6c757d;
+  --hospital-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --hospital-border-radius: 8px;
+  
+  /* Variables de PrimeNG para personalización */
+  --p-primary-color: #2c5aa0;
+  --p-primary-contrast-color: #ffffff;
+  --p-surface-0: #ffffff;
+  --p-surface-50: #f8f9fa;
+  --p-surface-100: #e9ecef;
+  --p-surface-200: #dee2e6;
+  --p-surface-300: #ced4da;
+  --p-surface-400: #adb5bd;
+  --p-surface-500: #6c757d;
+  --p-surface-600: #495057;
+  --p-surface-700: #343a40;
+  --p-surface-800: #212529;
+  --p-surface-900: #121416;
+  --p-content-color: #495057;
+  --p-text-color: #212529;
+  --p-text-muted-color: #6c757d;
+  --p-border-color: #dee2e6;
+  --p-border-radius: 6px;
+  --p-focus-ring: 0 0 0 0.2rem rgba(44, 90, 160, 0.2);
+}
+
+/* Reset y estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--hospital-light) 0%, #e3f2fd 100%);
+  color: var(--hospital-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Clases utilitarias para el tema hospitalario */
+.hospital-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.hospital-card {
+  background: var(--hospital-white);
+  border-radius: var(--hospital-border-radius);
+  box-shadow: var(--hospital-shadow);
+  padding: 2rem;
+  margin: 1rem 0;
+}
+
+.hospital-btn-primary {
+  background: var(--hospital-primary) !important;
+  border-color: var(--hospital-primary) !important;
+  color: var(--hospital-white) !important;
+  transition: all 0.3s ease;
+}
+
+.hospital-btn-primary:hover {
+  background: var(--hospital-secondary) !important;
+  border-color: var(--hospital-secondary) !important;
+  transform: translateY(-2px);
+}
+
+.hospital-text-primary {
+  color: var(--hospital-primary) !important;
+}
+
+.hospital-bg-gradient {
+  background: linear-gradient(135deg, var(--hospital-primary) 0%, var(--hospital-accent) 100%);
+}
+
+/* Variables CSS para el tema hospitalario */
+:root {
+  --hospital-primary: #2c5aa0;
+  --hospital-secondary: #1b6254;
+  --hospital-accent: #1aae9d;
+  --hospital-light: #f8f9fa;
+  --hospital-dark: #2d3748;
+  --hospital-gray: #718096;
+  --hospital-white: #ffffff;
+  --hospital-border-radius: 8px;
+  --hospital-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --hospital-bg-gradient: linear-gradient(135deg, #2c5aa0 0%, #059551 100%);
+}
+
+/* Personalización global de PrimeNG para tema hospitalario */
+:root {
+  --primary-color: #2c5aa0;
+  --primary-color-text: #ffffff;
+  --surface-0: #ffffff;
+  --surface-50: #f8f9fa;
+  --surface-100: #e9ecef;
+  --surface-200: #dee2e6;
+  --surface-300: #ced4da;
+  --surface-400: #adb5bd;
+  --surface-500: #6c757d;
+  --surface-600: #495057;
+  --surface-700: #343a40;
+  --surface-800: #212529;
+  --surface-900: #121416;
+}
+
+/* Estilos base */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, var(--hospital-light) 0%, #e3f2fd 100%);
+  color: var(--hospital-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Clases utilitarias para el tema hospitalario */
+.hospital-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.hospital-card {
+  background: var(--hospital-white);
+  border-radius: var(--hospital-border-radius);
+  box-shadow: var(--hospital-shadow);
+  padding: 2rem;
+  margin: 1rem 0;
+}
+
+.hospital-btn-primary {
+  background: var(--hospital-primary) !important;
+  border-color: var(--hospital-primary) !important;
+  color: var(--hospital-white) !important;
+  transition: all 0.3s ease;
+}
+
+.hospital-btn-primary:hover {
+  background: var(--hospital-secondary) !important;
+  border-color: var(--hospital-secondary) !important;
+  transform: translateY(-2px);
+}
+
+.hospital-text-primary {
+  color: var(--hospital-primary) !important;
+}
+
+.hospital-bg-gradient {
+  background: linear-gradient(135deg, var(--hospital-primary) 0%, var(--hospital-accent) 100%);
+}
+
+
