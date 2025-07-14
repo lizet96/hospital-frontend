@@ -99,7 +99,7 @@ export class PermissionsService {
    * Obtiene los permisos de un rol específico desde el backend
    */
   private getRolePermissions(roleId: number): Observable<Role> {
-    return this.http.get<any>(`${this.baseUrl}/v1/roles/${roleId}/permisos`)
+    return this.http.get<any>(`${this.baseUrl}/roles/${roleId}/permisos`)
       .pipe(
         map(response => {
           // Adaptar la respuesta del backend al formato esperado

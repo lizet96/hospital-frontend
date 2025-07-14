@@ -90,7 +90,7 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/v1/auth/register`, userData)
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/register`, userData)
       .pipe(
         tap(response => {
           // El registro exitoso tiene statusCode 201 y intCode "S02"
@@ -103,7 +103,7 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<BackendLoginResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/v1/auth/login`, credentials)
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials)
       .pipe(
         map(response => {
           // Extraer los datos del formato del backend
@@ -135,7 +135,7 @@ export class AuthService {
 
   logout(): void {
     // Llamar al endpoint de logout del backend
-    this.http.post(`${this.baseUrl}/v1/auth/logout`, {}).pipe(
+    this.http.post(`${this.baseUrl}/auth/logout`, {}).pipe(
       catchError(() => of(null)) // Si falla, continuar con el logout local
     ).subscribe(() => {
       this.removeToken();
@@ -144,7 +144,7 @@ export class AuthService {
   }
 
   validateToken(): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/v1/usuarios/perfil`);
+    return this.http.get<User>(`${this.baseUrl}/usuarios/perfil`);
   }
 
   getCurrentUser(): User | null {

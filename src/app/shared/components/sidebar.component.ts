@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { AuthService, User } from '../../services/auth.service';
+import { PermissionsService } from '../../services/permissions.service';
 import { PrimeIcons } from 'primeng/api';
 
 interface MenuItem {
@@ -149,6 +150,7 @@ export class SidebarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private permissionsService: PermissionsService,
     private router: Router
   ) {}
 
@@ -165,7 +167,11 @@ export class SidebarComponent implements OnInit {
 
   hasPermission(permission?: string): boolean {
     if (!permission) return true;
-    return this.authService.hasPermission(permission);
+    return this.permissionsService.hasPermission(permission);
+  }
+
+  canAccessResource(resource: string): boolean {
+    return this.permissionsService.canRead(resource);
   }
 
   selectItem(item: MenuItem) {
@@ -180,7 +186,7 @@ export class SidebarComponent implements OnInit {
   }
 
   private setupMenuItems() {
-    this.menuItems = [
+    const allMenuItems = [
       {
         label: 'Dashboard',
         icon: 'pi pi-home',
@@ -191,44 +197,55 @@ export class SidebarComponent implements OnInit {
         label: 'Gestión de Usuarios',
         icon: 'pi pi-users',
         view: 'usuarios',
-      //  permission: 'gestionar_usuarios'
+        permission: 'usuarios_read'
       },
       {
         label: 'Pacientes',
         icon: 'pi pi-user',
         view: 'pacientes',
-      //  permission: 'ver_pacientes'
+        permission: 'usuarios_read' // Los pacientes son usuarios con rol específico
       },
       {
         label: 'Consultas',
         icon: 'pi pi-calendar',
         view: 'consultas',
-     //   permission: 'ver_consultas'
+        permission: 'consultas_read'
       },
       {
         label: 'Expedientes',
         icon: 'pi pi-folder-open',
         view: 'expedientes',
-     //   permission: 'ver_expedientes'
+        permission: 'expedientes_read'
       },
       {
         label: 'Horarios',
-        icon: 'pi pi-clock',
+        icon: 'pi pi-calendar',
         view: 'horarios',
-     //   permission: 'ver_horarios'
+        permission: 'horarios_read'
       },
       {
         label: 'Consultorios',
         icon: 'pi pi-building',
         view: 'consultorios',
-    //    permission: 'gestionar_consultorios'
+        permission: 'consultorios_read'
+      },
+      {
+        label: 'Recetas',
+        icon: 'pi pi-file-edit',
+        view: 'recetas',
+        permission: 'recetas_read'
       },
       {
         label: 'Reportes',
         icon: 'pi pi-chart-bar',
         view: 'reportes',
-     //   permission: 'ver_reportes'
+        permission: 'reportes_read'
       }
     ];
+
+    // Filtrar elementos del menú basándose en permisos
+    this.menuItems = allMenuItems.filter(item => 
+      !item.permission || this.hasPermission(item.permission)
+    );
   }
 }

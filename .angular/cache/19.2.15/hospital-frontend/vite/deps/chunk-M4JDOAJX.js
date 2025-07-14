@@ -1,7 +1,7 @@
 import {
   BaseComponent,
   BaseStyle
-} from "./chunk-4GDQ6IK7.js";
+} from "./chunk-ICFNZTJK.js";
 import {
   addClass,
   getHeight,
@@ -11,10 +11,10 @@ import {
   getWidth,
   remove,
   removeClass
-} from "./chunk-GQIVO6LQ.js";
+} from "./chunk-7R5NF7PG.js";
 import {
   isPlatformBrowser
-} from "./chunk-3W4IXXSB.js";
+} from "./chunk-BB3JU6TI.js";
 import {
   Directive,
   Injectable,
@@ -234,4 +234,4 @@ var RippleModule = class _RippleModule {
 export {
   Ripple
 };
-//# sourceMappingURL=chunk-I74OKJXH.js.map
+//# sourceMappingURL=chunk-M4JDOAJX.js.map
