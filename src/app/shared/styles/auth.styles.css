@@ -104,6 +104,7 @@
   color: var(--hospital-dark);
   font-weight: 500;
   font-size: 0.9rem;
+  
 }
 
 .auth-input {
@@ -235,4 +236,16 @@
   text-overflow: ellipsis;
 }
 
+::ng-deep .p-password-icon {
+  right: 1.5rem !important;
+  left: auto !important;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
 
+::ng-deep .p-password input {
+  padding-right: 3rem !important;
+  padding-left: 1rem !important;
+}

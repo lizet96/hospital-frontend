@@ -46,15 +46,11 @@ Este proyecto corresponde a la interfaz de usuario del Sistema de Gestión Hospi
 │   │   │   │   ├── login/
 │   │   │   │   │   ├── login.component.css
 │   │   │   │   │   ├── login.component.html
-│   │   │   │   │   ├── login.component.spec.ts
 │   │   │   │   │   ├── login.component.ts
-│   │   │   │   │   ├── login.module.ts
 │   │   │   │   ├── register/
 │   │   │   │   │   ├── register.component.css
 │   │   │   │   │   ├── register.component.html
-│   │   │   │   │   ├── register.component.spec.ts
 │   │   │   │   │   ├── register.component.ts
-│   │   │   │   │   ├── register.module.ts
 │   │   │   ├── shared/
 │   │   │   │   ├── styles/
 │   │   │   │   │   ├── auth.styles.css        

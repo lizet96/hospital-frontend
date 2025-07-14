@@ -1,85 +1,80 @@
 import {
+  IconField,
+  InputIcon
+} from "./chunk-BHWV3UEB.js";
+import {
   Overlay,
   OverlayModule
-} from "./chunk-SY2FF2FX.js";
+} from "./chunk-5BTMBAC3.js";
 import {
   Scroller
-} from "./chunk-ILMKNOMD.js";
+} from "./chunk-AMKUHOKO.js";
+import {
+  Tooltip,
+  TooltipModule
+} from "./chunk-7IFQDE6M.js";
 import {
   InputText,
   InputTextModule
-} from "./chunk-SSFJ7KCE.js";
+} from "./chunk-BVTFHD2J.js";
+import "./chunk-KKF3TJTS.js";
+import "./chunk-KGCNUND3.js";
 import {
-  zindexutils
-} from "./chunk-D2ENZP5N.js";
+  NG_VALUE_ACCESSOR
+} from "./chunk-C72UDH2J.js";
 import {
   Ripple
-} from "./chunk-WD3WDYPG.js";
+} from "./chunk-I74OKJXH.js";
 import {
   AutoFocus,
   AutoFocusModule
-} from "./chunk-HG3CLRFT.js";
-import {
-  ConnectedOverlayScrollHandler
-} from "./chunk-5G7WYC4N.js";
+} from "./chunk-62LTF7SA.js";
+import "./chunk-5G7WYC4N.js";
 import {
   BlankIcon,
   CheckIcon,
   ChevronDownIcon,
   SearchIcon,
   TimesIcon
-} from "./chunk-TLKIYCKN.js";
-import {
-  NG_VALUE_ACCESSOR
-} from "./chunk-GXZ5377D.js";
+} from "./chunk-M6YRUK5L.js";
 import {
   BaseComponent,
   BaseStyle
-} from "./chunk-CZ4SQV5K.js";
+} from "./chunk-4GDQ6IK7.js";
 import {
   FilterService,
   PrimeTemplate,
   SharedModule,
   TranslationKeys,
-  appendChild,
   deepEquals,
   equals,
-  fadeIn,
   findLastIndex,
   findSingle,
   focus,
   getFirstFocusableElement,
   getFocusableElements,
   getLastFocusableElement,
-  getOuterHeight,
-  getOuterWidth,
-  getViewport,
-  getWindowScrollLeft,
-  getWindowScrollTop,
-  hasClass,
   isEmpty,
   isNotEmpty,
   isPrintableCharacter,
-  removeChild,
   resolveFieldData,
   scrollInView,
   unblockBodyScroll,
   uuid
-} from "./chunk-LLBI3VW6.js";
+} from "./chunk-GQIVO6LQ.js";
 import {
   CommonModule,
   NgClass,
   NgForOf,
   NgIf,
   NgStyle,
-  NgTemplateOutlet,
-  isPlatformBrowser
-} from "./chunk-I3C46P22.js";
+  NgTemplateOutlet
+} from "./chunk-ULEOAFUI.js";
+import "./chunk-3W4IXXSB.js";
 import {
   ChangeDetectionStrategy,
   Component,
   ContentChildren,
-  Directive,
   EventEmitter,
   HostBinding,
   Injectable,
@@ -87,12 +82,8 @@ import {
   NgModule,
   NgZone,
   Output,
-  TemplateRef,
   ViewChild,
-  ViewContainerRef,
   ViewEncapsulation,
-  __spreadProps,
-  __spreadValues,
   booleanAttribute,
   computed,
   effect,
@@ -102,16 +93,13 @@ import {
   setClassMetadata,
   signal,
   ɵɵInheritDefinitionFeature,
-  ɵɵNgOnChangesFeature,
   ɵɵProvidersFeature,
   ɵɵadvance,
   ɵɵattribute,
   ɵɵclassMap,
-  ɵɵclassProp,
   ɵɵconditional,
   ɵɵcontentQuery,
   ɵɵdefineComponent,
-  ɵɵdefineDirective,
   ɵɵdefineInjectable,
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
@@ -127,8 +115,6 @@ import {
   ɵɵlistener,
   ɵɵloadQuery,
   ɵɵnextContext,
-  ɵɵprojection,
-  ɵɵprojectionDef,
   ɵɵproperty,
   ɵɵpureFunction0,
   ɵɵpureFunction1,
@@ -149,1168 +135,17 @@ import {
   ɵɵtwoWayListener,
   ɵɵtwoWayProperty,
   ɵɵviewQuery
-} from "./chunk-LKBYGJ3F.js";
-
-// node_modules/primeng/fesm2022/primeng-iconfield.mjs
-var _c0 = ["*"];
-var theme = ({
-  dt
-}) => `
-.p-iconfield {
-    position: relative;
-    display: block;
-}
-
-.p-inputicon {
-    position: absolute;
-    top: 50%;
-    margin-top: calc(-1 * (${dt("icon.size")} / 2));
-    color: ${dt("iconfield.icon.color")};
-    line-height: 1;
-}
-
-.p-iconfield .p-inputicon:first-child {
-    inset-inline-start: ${dt("form.field.padding.x")};
-}
-
-.p-iconfield .p-inputicon:last-child {
-    inset-inline-end: ${dt("form.field.padding.x")};
-}
-
-.p-iconfield .p-inputtext:not(:first-child) {
-    padding-inline-start: calc((${dt("form.field.padding.x")} * 2) + ${dt("icon.size")});
-}
-
-.p-iconfield .p-inputtext:not(:last-child) {
-    padding-inline-end: calc((${dt("form.field.padding.x")} * 2) + ${dt("icon.size")});
-}
-
-.p-iconfield:has(.p-inputfield-sm) .p-inputicon {
-    font-size: ${dt("form.field.sm.font.size")};
-    width: ${dt("form.field.sm.font.size")};
-    height: ${dt("form.field.sm.font.size")};
-    margin-top: calc(-1 * (${dt("form.field.sm.font.size")} / 2));
-}
-
-.p-iconfield:has(.p-inputfield-lg) .p-inputicon {
-    font-size: ${dt("form.field.lg.font.size")};
-    width: ${dt("form.field.lg.font.size")};
-    height: ${dt("form.field.lg.font.size")};
-    margin-top: calc(-1 * (${dt("form.field.lg.font.size")} / 2));
-}
-`;
-var classes = {
-  root: "p-iconfield"
-};
-var IconFieldStyle = class _IconFieldStyle extends BaseStyle {
-  name = "iconfield";
-  theme = theme;
-  classes = classes;
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵIconFieldStyle_BaseFactory;
-    return function IconFieldStyle_Factory(__ngFactoryType__) {
-      return (ɵIconFieldStyle_BaseFactory || (ɵIconFieldStyle_BaseFactory = ɵɵgetInheritedFactory(_IconFieldStyle)))(__ngFactoryType__ || _IconFieldStyle);
-    };
-  })();
-  static ɵprov = ɵɵdefineInjectable({
-    token: _IconFieldStyle,
-    factory: _IconFieldStyle.ɵfac
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(IconFieldStyle, [{
-    type: Injectable
-  }], null, null);
-})();
-var IconFieldClasses;
-(function(IconFieldClasses2) {
-  IconFieldClasses2["root"] = "p-iconfield";
-})(IconFieldClasses || (IconFieldClasses = {}));
-var IconField = class _IconField extends BaseComponent {
-  /**
-   * Position of the icon.
-   * @group Props
-   */
-  iconPosition = "left";
-  get _styleClass() {
-    return this.styleClass;
-  }
-  /**
-   * Style class of the component.
-   * @group Props
-   */
-  styleClass;
-  _componentStyle = inject(IconFieldStyle);
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵIconField_BaseFactory;
-    return function IconField_Factory(__ngFactoryType__) {
-      return (ɵIconField_BaseFactory || (ɵIconField_BaseFactory = ɵɵgetInheritedFactory(_IconField)))(__ngFactoryType__ || _IconField);
-    };
-  })();
-  static ɵcmp = ɵɵdefineComponent({
-    type: _IconField,
-    selectors: [["p-iconfield"], ["p-iconField"], ["p-icon-field"]],
-    hostAttrs: [1, "p-iconfield"],
-    hostVars: 6,
-    hostBindings: function IconField_HostBindings(rf, ctx) {
-      if (rf & 2) {
-        ɵɵclassMap(ctx._styleClass);
-        ɵɵclassProp("p-iconfield-left", ctx.iconPosition === "left")("p-iconfield-right", ctx.iconPosition === "right");
-      }
-    },
-    inputs: {
-      iconPosition: "iconPosition",
-      styleClass: "styleClass"
-    },
-    features: [ɵɵProvidersFeature([IconFieldStyle]), ɵɵInheritDefinitionFeature],
-    ngContentSelectors: _c0,
-    decls: 1,
-    vars: 0,
-    template: function IconField_Template(rf, ctx) {
-      if (rf & 1) {
-        ɵɵprojectionDef();
-        ɵɵprojection(0);
-      }
-    },
-    dependencies: [CommonModule],
-    encapsulation: 2,
-    changeDetection: 0
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(IconField, [{
-    type: Component,
-    args: [{
-      selector: "p-iconfield, p-iconField, p-icon-field",
-      standalone: true,
-      imports: [CommonModule],
-      template: ` <ng-content></ng-content>`,
-      providers: [IconFieldStyle],
-      encapsulation: ViewEncapsulation.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      host: {
-        class: "p-iconfield",
-        "[class.p-iconfield-left]": 'iconPosition === "left"',
-        "[class.p-iconfield-right]": 'iconPosition === "right"'
-      }
-    }]
-  }], null, {
-    iconPosition: [{
-      type: Input
-    }],
-    _styleClass: [{
-      type: HostBinding,
-      args: ["class"]
-    }],
-    styleClass: [{
-      type: Input
-    }]
-  });
-})();
-var IconFieldModule = class _IconFieldModule {
-  static ɵfac = function IconFieldModule_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _IconFieldModule)();
-  };
-  static ɵmod = ɵɵdefineNgModule({
-    type: _IconFieldModule,
-    imports: [IconField],
-    exports: [IconField]
-  });
-  static ɵinj = ɵɵdefineInjector({
-    imports: [IconField]
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(IconFieldModule, [{
-    type: NgModule,
-    args: [{
-      imports: [IconField],
-      exports: [IconField]
-    }]
-  }], null, null);
-})();
-
-// node_modules/primeng/fesm2022/primeng-inputicon.mjs
-var _c02 = ["*"];
-var classes2 = {
-  root: "p-inputicon"
-};
-var InputIconStyle = class _InputIconStyle extends BaseStyle {
-  name = "inputicon";
-  classes = classes2;
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵInputIconStyle_BaseFactory;
-    return function InputIconStyle_Factory(__ngFactoryType__) {
-      return (ɵInputIconStyle_BaseFactory || (ɵInputIconStyle_BaseFactory = ɵɵgetInheritedFactory(_InputIconStyle)))(__ngFactoryType__ || _InputIconStyle);
-    };
-  })();
-  static ɵprov = ɵɵdefineInjectable({
-    token: _InputIconStyle,
-    factory: _InputIconStyle.ɵfac
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(InputIconStyle, [{
-    type: Injectable
-  }], null, null);
-})();
-var InputIcon = class _InputIcon extends BaseComponent {
-  /**
-   * Style class of the element.
-   * @group Props
-   */
-  styleClass;
-  get hostClasses() {
-    return this.styleClass;
-  }
-  _componentStyle = inject(InputIconStyle);
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵInputIcon_BaseFactory;
-    return function InputIcon_Factory(__ngFactoryType__) {
-      return (ɵInputIcon_BaseFactory || (ɵInputIcon_BaseFactory = ɵɵgetInheritedFactory(_InputIcon)))(__ngFactoryType__ || _InputIcon);
-    };
-  })();
-  static ɵcmp = ɵɵdefineComponent({
-    type: _InputIcon,
-    selectors: [["p-inputicon"], ["p-inputIcon"]],
-    hostVars: 4,
-    hostBindings: function InputIcon_HostBindings(rf, ctx) {
-      if (rf & 2) {
-        ɵɵclassMap(ctx.hostClasses);
-        ɵɵclassProp("p-inputicon", true);
-      }
-    },
-    inputs: {
-      styleClass: "styleClass"
-    },
-    features: [ɵɵProvidersFeature([InputIconStyle]), ɵɵInheritDefinitionFeature],
-    ngContentSelectors: _c02,
-    decls: 1,
-    vars: 0,
-    template: function InputIcon_Template(rf, ctx) {
-      if (rf & 1) {
-        ɵɵprojectionDef();
-        ɵɵprojection(0);
-      }
-    },
-    dependencies: [CommonModule, SharedModule],
-    encapsulation: 2,
-    changeDetection: 0
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(InputIcon, [{
-    type: Component,
-    args: [{
-      selector: "p-inputicon, p-inputIcon",
-      standalone: true,
-      imports: [CommonModule, SharedModule],
-      template: `<ng-content></ng-content>`,
-      encapsulation: ViewEncapsulation.None,
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      providers: [InputIconStyle],
-      host: {
-        "[class]": "styleClass",
-        "[class.p-inputicon]": "true"
-      }
-    }]
-  }], null, {
-    styleClass: [{
-      type: Input
-    }],
-    hostClasses: [{
-      type: HostBinding,
-      args: ["class"]
-    }]
-  });
-})();
-var InputIconModule = class _InputIconModule {
-  static ɵfac = function InputIconModule_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _InputIconModule)();
-  };
-  static ɵmod = ɵɵdefineNgModule({
-    type: _InputIconModule,
-    imports: [InputIcon, SharedModule],
-    exports: [InputIcon, SharedModule]
-  });
-  static ɵinj = ɵɵdefineInjector({
-    imports: [InputIcon, SharedModule, SharedModule]
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(InputIconModule, [{
-    type: NgModule,
-    args: [{
-      imports: [InputIcon, SharedModule],
-      exports: [InputIcon, SharedModule]
-    }]
-  }], null, null);
-})();
-
-// node_modules/primeng/fesm2022/primeng-tooltip.mjs
-var theme2 = ({
-  dt
-}) => `
-.p-tooltip {
-    position: absolute;
-    display: none;
-    max-width: ${dt("tooltip.max.width")};
-}
-
-.p-tooltip-right,
-.p-tooltip-left {
-    padding: 0 ${dt("tooltip.gutter")};
-}
-
-.p-tooltip-top,
-.p-tooltip-bottom {
-    padding: ${dt("tooltip.gutter")} 0;
-}
-
-.p-tooltip-text {
-    white-space: pre-line;
-    word-break: break-word;
-    background: ${dt("tooltip.background")};
-    color: ${dt("tooltip.color")};
-    padding: ${dt("tooltip.padding")};
-    box-shadow: ${dt("tooltip.shadow")};
-    border-radius: ${dt("tooltip.border.radius")};
-}
-
-.p-tooltip-arrow {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-color: transparent;
-    border-style: solid;
-    scale: 2;
-}
-
-.p-tooltip-right .p-tooltip-arrow {
-    top: 50%;
-    left: 0;
-    margin-top: calc(-1 * ${dt("tooltip.gutter")});
-    border-width: ${dt("tooltip.gutter")} ${dt("tooltip.gutter")} ${dt("tooltip.gutter")} 0;
-    border-right-color: ${dt("tooltip.background")};
-}
-
-.p-tooltip-left .p-tooltip-arrow {
-    top: 50%;
-    right: 0;
-    margin-top: calc(-1 * ${dt("tooltip.gutter")});
-    border-width: ${dt("tooltip.gutter")} 0 ${dt("tooltip.gutter")} ${dt("tooltip.gutter")};
-    border-left-color: ${dt("tooltip.background")};
-}
-
-.p-tooltip-top .p-tooltip-arrow {
-    bottom: 0;
-    left: 50%;
-    margin-left: calc(-1 * ${dt("tooltip.gutter")});
-    border-width: ${dt("tooltip.gutter")} ${dt("tooltip.gutter")} 0 ${dt("tooltip.gutter")};
-    border-top-color: ${dt("tooltip.background")};
-    border-bottom-color: ${dt("tooltip.background")};
-}
-
-.p-tooltip-bottom .p-tooltip-arrow {
-    top: 0;
-    left: 50%;
-    margin-left: calc(-1 * ${dt("tooltip.gutter")});
-    border-width: 0 ${dt("tooltip.gutter")} ${dt("tooltip.gutter")} ${dt("tooltip.gutter")};
-    border-top-color: ${dt("tooltip.background")};
-    border-bottom-color: ${dt("tooltip.background")};
-}
-`;
-var classes3 = {
-  root: "p-tooltip p-component",
-  arrow: "p-tooltip-arrow",
-  text: "p-tooltip-text"
-};
-var TooltipStyle = class _TooltipStyle extends BaseStyle {
-  name = "tooltip";
-  theme = theme2;
-  classes = classes3;
-  static ɵfac = /* @__PURE__ */ (() => {
-    let ɵTooltipStyle_BaseFactory;
-    return function TooltipStyle_Factory(__ngFactoryType__) {
-      return (ɵTooltipStyle_BaseFactory || (ɵTooltipStyle_BaseFactory = ɵɵgetInheritedFactory(_TooltipStyle)))(__ngFactoryType__ || _TooltipStyle);
-    };
-  })();
-  static ɵprov = ɵɵdefineInjectable({
-    token: _TooltipStyle,
-    factory: _TooltipStyle.ɵfac
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TooltipStyle, [{
-    type: Injectable
-  }], null, null);
-})();
-var TooltipClasses;
-(function(TooltipClasses2) {
-  TooltipClasses2["root"] = "p-tooltip";
-  TooltipClasses2["arrow"] = "p-tooltip-arrow";
-  TooltipClasses2["text"] = "p-tooltip-text";
-})(TooltipClasses || (TooltipClasses = {}));
-var Tooltip = class _Tooltip extends BaseComponent {
-  zone;
-  viewContainer;
-  /**
-   * Position of the tooltip.
-   * @group Props
-   */
-  tooltipPosition;
-  /**
-   * Event to show the tooltip.
-   * @group Props
-   */
-  tooltipEvent = "hover";
-  /**
-   *  Target element to attach the overlay, valid values are "body", "target" or a local ng-F variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name).
-   * @group Props
-   */
-  appendTo;
-  /**
-   * Type of CSS position.
-   * @group Props
-   */
-  positionStyle;
-  /**
-   * Style class of the tooltip.
-   * @group Props
-   */
-  tooltipStyleClass;
-  /**
-   * Whether the z-index should be managed automatically to always go on top or have a fixed value.
-   * @group Props
-   */
-  tooltipZIndex;
-  /**
-   * By default the tooltip contents are rendered as text. Set to false to support html tags in the content.
-   * @group Props
-   */
-  escape = true;
-  /**
-   * Delay to show the tooltip in milliseconds.
-   * @group Props
-   */
-  showDelay;
-  /**
-   * Delay to hide the tooltip in milliseconds.
-   * @group Props
-   */
-  hideDelay;
-  /**
-   * Time to wait in milliseconds to hide the tooltip even it is active.
-   * @group Props
-   */
-  life;
-  /**
-   * Specifies the additional vertical offset of the tooltip from its default position.
-   * @group Props
-   */
-  positionTop;
-  /**
-   * Specifies the additional horizontal offset of the tooltip from its default position.
-   * @group Props
-   */
-  positionLeft;
-  /**
-   * Whether to hide tooltip when hovering over tooltip content.
-   * @group Props
-   */
-  autoHide = true;
-  /**
-   * Automatically adjusts the element position when there is not enough space on the selected position.
-   * @group Props
-   */
-  fitContent = true;
-  /**
-   * Whether to hide tooltip on escape key press.
-   * @group Props
-   */
-  hideOnEscape = true;
-  /**
-   * Content of the tooltip.
-   * @group Props
-   */
-  content;
-  /**
-   * When present, it specifies that the component should be disabled.
-   * @defaultValue false
-   * @group Props
-   */
-  get disabled() {
-    return this._disabled;
-  }
-  set disabled(val) {
-    this._disabled = val;
-    this.deactivate();
-  }
-  /**
-   * Specifies the tooltip configuration options for the component.
-   * @group Props
-   */
-  tooltipOptions;
-  _tooltipOptions = {
-    tooltipLabel: null,
-    tooltipPosition: "right",
-    tooltipEvent: "hover",
-    appendTo: "body",
-    positionStyle: null,
-    tooltipStyleClass: null,
-    tooltipZIndex: "auto",
-    escape: true,
-    disabled: null,
-    showDelay: null,
-    hideDelay: null,
-    positionTop: null,
-    positionLeft: null,
-    life: null,
-    autoHide: true,
-    hideOnEscape: true,
-    id: uuid("pn_id_") + "_tooltip"
-  };
-  _disabled;
-  container;
-  styleClass;
-  tooltipText;
-  showTimeout;
-  hideTimeout;
-  active;
-  mouseEnterListener;
-  mouseLeaveListener;
-  containerMouseleaveListener;
-  clickListener;
-  focusListener;
-  blurListener;
-  documentEscapeListener;
-  scrollHandler;
-  resizeListener;
-  _componentStyle = inject(TooltipStyle);
-  interactionInProgress = false;
-  constructor(zone, viewContainer) {
-    super();
-    this.zone = zone;
-    this.viewContainer = viewContainer;
-  }
-  ngAfterViewInit() {
-    super.ngAfterViewInit();
-    if (isPlatformBrowser(this.platformId)) {
-      this.zone.runOutsideAngular(() => {
-        const tooltipEvent = this.getOption("tooltipEvent");
-        if (tooltipEvent === "hover" || tooltipEvent === "both") {
-          this.mouseEnterListener = this.onMouseEnter.bind(this);
-          this.mouseLeaveListener = this.onMouseLeave.bind(this);
-          this.clickListener = this.onInputClick.bind(this);
-          this.el.nativeElement.addEventListener("mouseenter", this.mouseEnterListener);
-          this.el.nativeElement.addEventListener("click", this.clickListener);
-          this.el.nativeElement.addEventListener("mouseleave", this.mouseLeaveListener);
-        }
-        if (tooltipEvent === "focus" || tooltipEvent === "both") {
-          this.focusListener = this.onFocus.bind(this);
-          this.blurListener = this.onBlur.bind(this);
-          let target = this.el.nativeElement.querySelector(".p-component");
-          if (!target) {
-            target = this.getTarget(this.el.nativeElement);
-          }
-          target.addEventListener("focus", this.focusListener);
-          target.addEventListener("blur", this.blurListener);
-        }
-      });
-    }
-  }
-  ngOnChanges(simpleChange) {
-    super.ngOnChanges(simpleChange);
-    if (simpleChange.tooltipPosition) {
-      this.setOption({
-        tooltipPosition: simpleChange.tooltipPosition.currentValue
-      });
-    }
-    if (simpleChange.tooltipEvent) {
-      this.setOption({
-        tooltipEvent: simpleChange.tooltipEvent.currentValue
-      });
-    }
-    if (simpleChange.appendTo) {
-      this.setOption({
-        appendTo: simpleChange.appendTo.currentValue
-      });
-    }
-    if (simpleChange.positionStyle) {
-      this.setOption({
-        positionStyle: simpleChange.positionStyle.currentValue
-      });
-    }
-    if (simpleChange.tooltipStyleClass) {
-      this.setOption({
-        tooltipStyleClass: simpleChange.tooltipStyleClass.currentValue
-      });
-    }
-    if (simpleChange.tooltipZIndex) {
-      this.setOption({
-        tooltipZIndex: simpleChange.tooltipZIndex.currentValue
-      });
-    }
-    if (simpleChange.escape) {
-      this.setOption({
-        escape: simpleChange.escape.currentValue
-      });
-    }
-    if (simpleChange.showDelay) {
-      this.setOption({
-        showDelay: simpleChange.showDelay.currentValue
-      });
-    }
-    if (simpleChange.hideDelay) {
-      this.setOption({
-        hideDelay: simpleChange.hideDelay.currentValue
-      });
-    }
-    if (simpleChange.life) {
-      this.setOption({
-        life: simpleChange.life.currentValue
-      });
-    }
-    if (simpleChange.positionTop) {
-      this.setOption({
-        positionTop: simpleChange.positionTop.currentValue
-      });
-    }
-    if (simpleChange.positionLeft) {
-      this.setOption({
-        positionLeft: simpleChange.positionLeft.currentValue
-      });
-    }
-    if (simpleChange.disabled) {
-      this.setOption({
-        disabled: simpleChange.disabled.currentValue
-      });
-    }
-    if (simpleChange.content) {
-      this.setOption({
-        tooltipLabel: simpleChange.content.currentValue
-      });
-      if (this.active) {
-        if (simpleChange.content.currentValue) {
-          if (this.container && this.container.offsetParent) {
-            this.updateText();
-            this.align();
-          } else {
-            this.show();
-          }
-        } else {
-          this.hide();
-        }
-      }
-    }
-    if (simpleChange.autoHide) {
-      this.setOption({
-        autoHide: simpleChange.autoHide.currentValue
-      });
-    }
-    if (simpleChange.id) {
-      this.setOption({
-        id: simpleChange.id.currentValue
-      });
-    }
-    if (simpleChange.tooltipOptions) {
-      this._tooltipOptions = __spreadValues(__spreadValues({}, this._tooltipOptions), simpleChange.tooltipOptions.currentValue);
-      this.deactivate();
-      if (this.active) {
-        if (this.getOption("tooltipLabel")) {
-          if (this.container && this.container.offsetParent) {
-            this.updateText();
-            this.align();
-          } else {
-            this.show();
-          }
-        } else {
-          this.hide();
-        }
-      }
-    }
-  }
-  isAutoHide() {
-    return this.getOption("autoHide");
-  }
-  onMouseEnter(e) {
-    if (!this.container && !this.showTimeout) {
-      this.activate();
-    }
-  }
-  onMouseLeave(e) {
-    if (!this.isAutoHide()) {
-      const valid = hasClass(e.relatedTarget, "p-tooltip") || hasClass(e.relatedTarget, "p-tooltip-text") || hasClass(e.relatedTarget, "p-tooltip-arrow");
-      !valid && this.deactivate();
-    } else {
-      this.deactivate();
-    }
-  }
-  onFocus(e) {
-    this.activate();
-  }
-  onBlur(e) {
-    this.deactivate();
-  }
-  onInputClick(e) {
-    this.deactivate();
-  }
-  activate() {
-    if (!this.interactionInProgress) {
-      this.active = true;
-      this.clearHideTimeout();
-      if (this.getOption("showDelay")) this.showTimeout = setTimeout(() => {
-        this.show();
-      }, this.getOption("showDelay"));
-      else this.show();
-      if (this.getOption("life")) {
-        let duration = this.getOption("showDelay") ? this.getOption("life") + this.getOption("showDelay") : this.getOption("life");
-        this.hideTimeout = setTimeout(() => {
-          this.hide();
-        }, duration);
-      }
-      if (this.getOption("hideOnEscape")) {
-        this.documentEscapeListener = this.renderer.listen("document", "keydown.escape", () => {
-          this.deactivate();
-          this.documentEscapeListener();
-        });
-      }
-      this.interactionInProgress = true;
-    }
-  }
-  deactivate() {
-    this.interactionInProgress = false;
-    this.active = false;
-    this.clearShowTimeout();
-    if (this.getOption("hideDelay")) {
-      this.clearHideTimeout();
-      this.hideTimeout = setTimeout(() => {
-        this.hide();
-      }, this.getOption("hideDelay"));
-    } else {
-      this.hide();
-    }
-    if (this.documentEscapeListener) {
-      this.documentEscapeListener();
-    }
-  }
-  create() {
-    if (this.container) {
-      this.clearHideTimeout();
-      this.remove();
-    }
-    this.container = document.createElement("div");
-    this.container.setAttribute("id", this.getOption("id"));
-    this.container.setAttribute("role", "tooltip");
-    let tooltipArrow = document.createElement("div");
-    tooltipArrow.className = "p-tooltip-arrow";
-    this.container.appendChild(tooltipArrow);
-    this.tooltipText = document.createElement("div");
-    this.tooltipText.className = "p-tooltip-text";
-    this.updateText();
-    if (this.getOption("positionStyle")) {
-      this.container.style.position = this.getOption("positionStyle");
-    }
-    this.container.appendChild(this.tooltipText);
-    if (this.getOption("appendTo") === "body") document.body.appendChild(this.container);
-    else if (this.getOption("appendTo") === "target") appendChild(this.container, this.el.nativeElement);
-    else appendChild(this.getOption("appendTo"), this.container);
-    this.container.style.display = "none";
-    if (this.fitContent) {
-      this.container.style.width = "fit-content";
-    }
-    if (this.isAutoHide()) {
-      this.container.style.pointerEvents = "none";
-    } else {
-      this.container.style.pointerEvents = "unset";
-      this.bindContainerMouseleaveListener();
-    }
-  }
-  bindContainerMouseleaveListener() {
-    if (!this.containerMouseleaveListener) {
-      const targetEl = this.container ?? this.container.nativeElement;
-      this.containerMouseleaveListener = this.renderer.listen(targetEl, "mouseleave", (e) => {
-        this.deactivate();
-      });
-    }
-  }
-  unbindContainerMouseleaveListener() {
-    if (this.containerMouseleaveListener) {
-      this.bindContainerMouseleaveListener();
-      this.containerMouseleaveListener = null;
-    }
-  }
-  show() {
-    if (!this.getOption("tooltipLabel") || this.getOption("disabled")) {
-      return;
-    }
-    this.create();
-    const nativeElement = this.el.nativeElement;
-    const pDialogWrapper = nativeElement.closest("p-dialog");
-    if (pDialogWrapper) {
-      setTimeout(() => {
-        this.container && (this.container.style.display = "inline-block");
-        this.container && this.align();
-      }, 100);
-    } else {
-      this.container.style.display = "inline-block";
-      this.align();
-    }
-    fadeIn(this.container, 250);
-    if (this.getOption("tooltipZIndex") === "auto") zindexutils.set("tooltip", this.container, this.config.zIndex.tooltip);
-    else this.container.style.zIndex = this.getOption("tooltipZIndex");
-    this.bindDocumentResizeListener();
-    this.bindScrollListener();
-  }
-  hide() {
-    if (this.getOption("tooltipZIndex") === "auto") {
-      zindexutils.clear(this.container);
-    }
-    this.remove();
-  }
-  updateText() {
-    const content = this.getOption("tooltipLabel");
-    if (content instanceof TemplateRef) {
-      const embeddedViewRef = this.viewContainer.createEmbeddedView(content);
-      embeddedViewRef.detectChanges();
-      embeddedViewRef.rootNodes.forEach((node) => this.tooltipText.appendChild(node));
-    } else if (this.getOption("escape")) {
-      this.tooltipText.innerHTML = "";
-      this.tooltipText.appendChild(document.createTextNode(content));
-    } else {
-      this.tooltipText.innerHTML = content;
-    }
-  }
-  align() {
-    let position = this.getOption("tooltipPosition");
-    const positionPriority = {
-      top: [this.alignTop, this.alignBottom, this.alignRight, this.alignLeft],
-      bottom: [this.alignBottom, this.alignTop, this.alignRight, this.alignLeft],
-      left: [this.alignLeft, this.alignRight, this.alignTop, this.alignBottom],
-      right: [this.alignRight, this.alignLeft, this.alignTop, this.alignBottom]
-    };
-    for (let [index, alignmentFn] of positionPriority[position].entries()) {
-      if (index === 0) alignmentFn.call(this);
-      else if (this.isOutOfBounds()) alignmentFn.call(this);
-      else break;
-    }
-  }
-  getHostOffset() {
-    if (this.getOption("appendTo") === "body" || this.getOption("appendTo") === "target") {
-      let offset = this.el.nativeElement.getBoundingClientRect();
-      let targetLeft = offset.left + getWindowScrollLeft();
-      let targetTop = offset.top + getWindowScrollTop();
-      return {
-        left: targetLeft,
-        top: targetTop
-      };
-    } else {
-      return {
-        left: 0,
-        top: 0
-      };
-    }
-  }
-  get activeElement() {
-    return this.el.nativeElement.nodeName.startsWith("P-") ? findSingle(this.el.nativeElement, ".p-component") : this.el.nativeElement;
-  }
-  alignRight() {
-    this.preAlign("right");
-    const el = this.activeElement;
-    const offsetLeft = getOuterWidth(el);
-    const offsetTop = (getOuterHeight(el) - getOuterHeight(this.container)) / 2;
-    this.alignTooltip(offsetLeft, offsetTop);
-  }
-  alignLeft() {
-    this.preAlign("left");
-    let offsetLeft = getOuterWidth(this.container);
-    let offsetTop = (getOuterHeight(this.el.nativeElement) - getOuterHeight(this.container)) / 2;
-    this.alignTooltip(-offsetLeft, offsetTop);
-  }
-  alignTop() {
-    this.preAlign("top");
-    let offsetLeft = (getOuterWidth(this.el.nativeElement) - getOuterWidth(this.container)) / 2;
-    let offsetTop = getOuterHeight(this.container);
-    this.alignTooltip(offsetLeft, -offsetTop);
-  }
-  alignBottom() {
-    this.preAlign("bottom");
-    let offsetLeft = (getOuterWidth(this.el.nativeElement) - getOuterWidth(this.container)) / 2;
-    let offsetTop = getOuterHeight(this.el.nativeElement);
-    this.alignTooltip(offsetLeft, offsetTop);
-  }
-  alignTooltip(offsetLeft, offsetTop) {
-    let hostOffset = this.getHostOffset();
-    let left = hostOffset.left + offsetLeft;
-    let top = hostOffset.top + offsetTop;
-    this.container.style.left = left + this.getOption("positionLeft") + "px";
-    this.container.style.top = top + this.getOption("positionTop") + "px";
-  }
-  setOption(option) {
-    this._tooltipOptions = __spreadValues(__spreadValues({}, this._tooltipOptions), option);
-  }
-  getOption(option) {
-    return this._tooltipOptions[option];
-  }
-  getTarget(el) {
-    return hasClass(el, "p-inputwrapper") ? findSingle(el, "input") : el;
-  }
-  preAlign(position) {
-    this.container.style.left = "-999px";
-    this.container.style.top = "-999px";
-    let defaultClassName = "p-tooltip p-component p-tooltip-" + position;
-    this.container.className = this.getOption("tooltipStyleClass") ? defaultClassName + " " + this.getOption("tooltipStyleClass") : defaultClassName;
-  }
-  isOutOfBounds() {
-    let offset = this.container.getBoundingClientRect();
-    let targetTop = offset.top;
-    let targetLeft = offset.left;
-    let width = getOuterWidth(this.container);
-    let height = getOuterHeight(this.container);
-    let viewport = getViewport();
-    return targetLeft + width > viewport.width || targetLeft < 0 || targetTop < 0 || targetTop + height > viewport.height;
-  }
-  onWindowResize(e) {
-    this.hide();
-  }
-  bindDocumentResizeListener() {
-    this.zone.runOutsideAngular(() => {
-      this.resizeListener = this.onWindowResize.bind(this);
-      window.addEventListener("resize", this.resizeListener);
-    });
-  }
-  unbindDocumentResizeListener() {
-    if (this.resizeListener) {
-      window.removeEventListener("resize", this.resizeListener);
-      this.resizeListener = null;
-    }
-  }
-  bindScrollListener() {
-    if (!this.scrollHandler) {
-      this.scrollHandler = new ConnectedOverlayScrollHandler(this.el.nativeElement, () => {
-        if (this.container) {
-          this.hide();
-        }
-      });
-    }
-    this.scrollHandler.bindScrollListener();
-  }
-  unbindScrollListener() {
-    if (this.scrollHandler) {
-      this.scrollHandler.unbindScrollListener();
-    }
-  }
-  unbindEvents() {
-    const tooltipEvent = this.getOption("tooltipEvent");
-    if (tooltipEvent === "hover" || tooltipEvent === "both") {
-      this.el.nativeElement.removeEventListener("mouseenter", this.mouseEnterListener);
-      this.el.nativeElement.removeEventListener("mouseleave", this.mouseLeaveListener);
-      this.el.nativeElement.removeEventListener("click", this.clickListener);
-    }
-    if (tooltipEvent === "focus" || tooltipEvent === "both") {
-      let target = this.el.nativeElement.querySelector(".p-component");
-      if (!target) {
-        target = this.getTarget(this.el.nativeElement);
-      }
-      target.removeEventListener("focus", this.focusListener);
-      target.removeEventListener("blur", this.blurListener);
-    }
-    this.unbindDocumentResizeListener();
-  }
-  remove() {
-    if (this.container && this.container.parentElement) {
-      if (this.getOption("appendTo") === "body") document.body.removeChild(this.container);
-      else if (this.getOption("appendTo") === "target") this.el.nativeElement.removeChild(this.container);
-      else removeChild(this.getOption("appendTo"), this.container);
-    }
-    this.unbindDocumentResizeListener();
-    this.unbindScrollListener();
-    this.unbindContainerMouseleaveListener();
-    this.clearTimeouts();
-    this.container = null;
-    this.scrollHandler = null;
-  }
-  clearShowTimeout() {
-    if (this.showTimeout) {
-      clearTimeout(this.showTimeout);
-      this.showTimeout = null;
-    }
-  }
-  clearHideTimeout() {
-    if (this.hideTimeout) {
-      clearTimeout(this.hideTimeout);
-      this.hideTimeout = null;
-    }
-  }
-  clearTimeouts() {
-    this.clearShowTimeout();
-    this.clearHideTimeout();
-  }
-  ngOnDestroy() {
-    this.unbindEvents();
-    super.ngOnDestroy();
-    if (this.container) {
-      zindexutils.clear(this.container);
-    }
-    this.remove();
-    if (this.scrollHandler) {
-      this.scrollHandler.destroy();
-      this.scrollHandler = null;
-    }
-    if (this.documentEscapeListener) {
-      this.documentEscapeListener();
-    }
-  }
-  static ɵfac = function Tooltip_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _Tooltip)(ɵɵdirectiveInject(NgZone), ɵɵdirectiveInject(ViewContainerRef));
-  };
-  static ɵdir = ɵɵdefineDirective({
-    type: _Tooltip,
-    selectors: [["", "pTooltip", ""]],
-    inputs: {
-      tooltipPosition: "tooltipPosition",
-      tooltipEvent: "tooltipEvent",
-      appendTo: "appendTo",
-      positionStyle: "positionStyle",
-      tooltipStyleClass: "tooltipStyleClass",
-      tooltipZIndex: "tooltipZIndex",
-      escape: [2, "escape", "escape", booleanAttribute],
-      showDelay: [2, "showDelay", "showDelay", numberAttribute],
-      hideDelay: [2, "hideDelay", "hideDelay", numberAttribute],
-      life: [2, "life", "life", numberAttribute],
-      positionTop: [2, "positionTop", "positionTop", numberAttribute],
-      positionLeft: [2, "positionLeft", "positionLeft", numberAttribute],
-      autoHide: [2, "autoHide", "autoHide", booleanAttribute],
-      fitContent: [2, "fitContent", "fitContent", booleanAttribute],
-      hideOnEscape: [2, "hideOnEscape", "hideOnEscape", booleanAttribute],
-      content: [0, "pTooltip", "content"],
-      disabled: [0, "tooltipDisabled", "disabled"],
-      tooltipOptions: "tooltipOptions"
-    },
-    features: [ɵɵProvidersFeature([TooltipStyle]), ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature]
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Tooltip, [{
-    type: Directive,
-    args: [{
-      selector: "[pTooltip]",
-      standalone: true,
-      providers: [TooltipStyle]
-    }]
-  }], () => [{
-    type: NgZone
-  }, {
-    type: ViewContainerRef
-  }], {
-    tooltipPosition: [{
-      type: Input
-    }],
-    tooltipEvent: [{
-      type: Input
-    }],
-    appendTo: [{
-      type: Input
-    }],
-    positionStyle: [{
-      type: Input
-    }],
-    tooltipStyleClass: [{
-      type: Input
-    }],
-    tooltipZIndex: [{
-      type: Input
-    }],
-    escape: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    showDelay: [{
-      type: Input,
-      args: [{
-        transform: numberAttribute
-      }]
-    }],
-    hideDelay: [{
-      type: Input,
-      args: [{
-        transform: numberAttribute
-      }]
-    }],
-    life: [{
-      type: Input,
-      args: [{
-        transform: numberAttribute
-      }]
-    }],
-    positionTop: [{
-      type: Input,
-      args: [{
-        transform: numberAttribute
-      }]
-    }],
-    positionLeft: [{
-      type: Input,
-      args: [{
-        transform: numberAttribute
-      }]
-    }],
-    autoHide: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    fitContent: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    hideOnEscape: [{
-      type: Input,
-      args: [{
-        transform: booleanAttribute
-      }]
-    }],
-    content: [{
-      type: Input,
-      args: ["pTooltip"]
-    }],
-    disabled: [{
-      type: Input,
-      args: ["tooltipDisabled"]
-    }],
-    tooltipOptions: [{
-      type: Input
-    }]
-  });
-})();
-var TooltipModule = class _TooltipModule {
-  static ɵfac = function TooltipModule_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _TooltipModule)();
-  };
-  static ɵmod = ɵɵdefineNgModule({
-    type: _TooltipModule,
-    imports: [Tooltip],
-    exports: [Tooltip]
-  });
-  static ɵinj = ɵɵdefineInjector({});
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TooltipModule, [{
-    type: NgModule,
-    args: [{
-      imports: [Tooltip],
-      exports: [Tooltip]
-    }]
-  }], null, null);
-})();
+} from "./chunk-E2I4WFPS.js";
+import "./chunk-PEBH6BBU.js";
+import "./chunk-WPM5VTLQ.js";
+import "./chunk-4S3KYZTJ.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-3OV72XIM.js";
 
 // node_modules/primeng/fesm2022/primeng-dropdown.mjs
-var _c03 = (a0) => ({
+var _c0 = (a0) => ({
   height: a0
 });
 var _c1 = (a0, a1, a2) => ({
@@ -1824,7 +659,7 @@ function Dropdown_ng_template_9_p_scroller_6_Template(rf, ctx) {
   }
   if (rf & 2) {
     const ctx_r2 = ɵɵnextContext(2);
-    ɵɵstyleMap(ɵɵpureFunction1(8, _c03, ctx_r2.scrollHeight));
+    ɵɵstyleMap(ɵɵpureFunction1(8, _c0, ctx_r2.scrollHeight));
     ɵɵproperty("items", ctx_r2.visibleOptions())("itemSize", ctx_r2.virtualScrollItemSize || ctx_r2._itemSize)("autoSize", true)("lazy", ctx_r2.lazy)("options", ctx_r2.virtualScrollOptions);
     ɵɵadvance(4);
     ɵɵproperty("ngIf", ctx_r2.loaderTemplate);
@@ -1882,7 +717,7 @@ function Dropdown_ng_template_9_ng_template_8_ng_template_2_ng_container_0_Templ
     const scrollerOptions_r20 = ɵɵnextContext().options;
     const ctx_r2 = ɵɵnextContext(2);
     ɵɵadvance();
-    ɵɵproperty("ngStyle", ɵɵpureFunction1(5, _c03, scrollerOptions_r20.itemSize + "px"));
+    ɵɵproperty("ngStyle", ɵɵpureFunction1(5, _c0, scrollerOptions_r20.itemSize + "px"));
     ɵɵattribute("id", ctx_r2.id + "_" + ctx_r2.getOptionIndex(i_r19, scrollerOptions_r20));
     ɵɵadvance();
     ɵɵproperty("ngIf", !ctx_r2.groupTemplate);
@@ -1964,7 +799,7 @@ function Dropdown_ng_template_9_ng_template_8_li_3_Template(rf, ctx) {
   if (rf & 2) {
     const scrollerOptions_r20 = ɵɵnextContext().options;
     const ctx_r2 = ɵɵnextContext(2);
-    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c03, scrollerOptions_r20.itemSize + "px"));
+    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c0, scrollerOptions_r20.itemSize + "px"));
     ɵɵadvance();
     ɵɵconditional(!ctx_r2.emptyFilterTemplate && !ctx_r2.emptyTemplate ? 1 : 2);
   }
@@ -2001,7 +836,7 @@ function Dropdown_ng_template_9_ng_template_8_li_4_Template(rf, ctx) {
   if (rf & 2) {
     const scrollerOptions_r20 = ɵɵnextContext().options;
     const ctx_r2 = ɵɵnextContext(2);
-    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c03, scrollerOptions_r20.itemSize + "px"));
+    ɵɵproperty("ngStyle", ɵɵpureFunction1(2, _c0, scrollerOptions_r20.itemSize + "px"));
     ɵɵadvance();
     ɵɵconditional(!ctx_r2.emptyTemplate ? 1 : 2);
   }
@@ -2077,7 +912,7 @@ function Dropdown_ng_template_9_Template(rf, ctx) {
     ɵɵattribute("tabindex", 0)("data-p-hidden-accessible", true)("data-p-hidden-focusable", true);
   }
 }
-var theme3 = ({
+var theme = ({
   dt
 }) => `
 .p-select {
@@ -2280,7 +1115,7 @@ input.p-select-label {
     color: ${dt("select.invalid.placeholder.color")};
 }
 `;
-var classes4 = {
+var classes = {
   root: ({
     instance
   }) => ["p-dropdown p-select p-component p-inputwrapper", {
@@ -2330,8 +1165,8 @@ var classes4 = {
 };
 var DropdownStyle = class _DropdownStyle extends BaseStyle {
   name = "select";
-  theme = theme3;
-  classes = classes4;
+  theme = theme;
+  classes = classes;
   static ɵfac = /* @__PURE__ */ (() => {
     let ɵDropdownStyle_BaseFactory;
     return function DropdownStyle_Factory(__ngFactoryType__) {
@@ -2421,7 +1256,7 @@ var DropdownItem = class _DropdownItem extends BaseComponent {
         ɵɵelementEnd();
       }
       if (rf & 2) {
-        ɵɵproperty("id", ctx.id)("ngStyle", ɵɵpureFunction1(14, _c03, ctx.itemSize + "px"))("ngClass", ɵɵpureFunction3(16, _c1, ctx.selected, ctx.disabled, ctx.focused));
+        ɵɵproperty("id", ctx.id)("ngStyle", ɵɵpureFunction1(14, _c0, ctx.itemSize + "px"))("ngClass", ɵɵpureFunction3(16, _c1, ctx.selected, ctx.disabled, ctx.focused));
         ɵɵattribute("aria-label", ctx.label)("aria-setsize", ctx.ariaSetSize)("aria-posinset", ctx.ariaPosInset)("aria-selected", ctx.selected)("data-p-focused", ctx.focused)("data-p-highlight", ctx.selected)("data-p-disabled", ctx.disabled);
         ɵɵadvance();
         ɵɵproperty("ngIf", ctx.checkmark);
@@ -2997,7 +1832,7 @@ var Dropdown = class _Dropdown extends BaseComponent {
   lastHiddenFocusableElementOnOverlay;
   // @todo to be refactored
   get hostClass() {
-    const classes5 = this._componentStyle.classes.root({
+    const classes2 = this._componentStyle.classes.root({
       instance: this
     }).map((cls) => {
       if (typeof cls === "string") {
@@ -3006,7 +1841,7 @@ var Dropdown = class _Dropdown extends BaseComponent {
         return Object.keys(cls).filter((key) => cls[key]).join(" ");
       }
     }).join(" ");
-    return classes5 + " " + this.styleClass;
+    return classes2 + " " + this.styleClass;
   }
   get hostStyle() {
     return this.style;

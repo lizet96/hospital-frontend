@@ -167,4 +167,70 @@ body {
   background: linear-gradient(135deg, var(--hospital-primary) 0%, var(--hospital-accent) 100%);
 }
 
+.input-wrapper {
+  margin-bottom: 1.5rem;
+}
+.p-input-icon-left > .pi {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
 
+
+/* Estilos adicionales para modales hospitalarios */
+::ng-deep .p-dialog-mask {
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+::ng-deep .hospital-modal .p-dialog-header-close {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  transition: all 0.3s ease !important;
+}
+
+::ng-deep .hospital-modal .p-dialog-header-close:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05);
+}
+
+/* Animaciones para el modal */
+::ng-deep .hospital-modal .p-dialog {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mejoras para inputs en general */
+::ng-deep .p-inputtext:focus,
+::ng-deep .p-dropdown:not(.p-disabled).p-focus,
+::ng-deep .p-calendar .p-inputtext:focus {
+  border-color: var(--hospital-primary) !important;
+  box-shadow: 0 0 0 3px rgba(5, 104, 94, 0.1) !important;
+}
+
+/* Estilos para estados de validación */
+::ng-deep .ng-invalid.ng-touched .p-inputtext,
+::ng-deep .ng-invalid.ng-touched .p-dropdown,
+::ng-deep .ng-invalid.ng-touched .p-calendar .p-inputtext {
+  border-color: var(--hospital-danger) !important;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important;
+}
+
+::ng-deep .ng-valid.ng-touched .p-inputtext,
+::ng-deep .ng-valid.ng-touched .p-dropdown,
+::ng-deep .ng-valid.ng-touched .p-calendar .p-inputtext {
+  border-color: var(--hospital-success) !important;
+}
