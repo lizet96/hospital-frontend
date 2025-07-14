@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -144,22 +144,34 @@ export interface TableAction {
     }
   `]
 })
-export class BaseTableComponent implements OnInit {
+export class BaseTableComponent implements OnInit, OnChanges {
   @Input() title: string = '';
   @Input() entityName: string = '';
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() actions: TableAction[] = [];
   @Input() createPermission?: string;
+  @Input() canCreate = false;
+  @Input() loading = false;
   
   @Output() onCreate = new EventEmitter<void>();
-  
-  canCreate = false;
   
   constructor(private authService: AuthService) {}
   
   ngOnInit() {
-    this.canCreate = !this.createPermission || this.authService.hasPermission(this.createPermission);
+    // Only set canCreate based on permissions if it wasn't explicitly provided as input
+    if (this.canCreate === false && this.createPermission) {
+      this.canCreate = this.authService.hasPermission(this.createPermission);
+    } else if (this.canCreate === false && !this.createPermission) {
+      this.canCreate = true; // Default to true if no permission specified
+    }
+    console.log('BaseTable ngOnInit - data:', this.data);
+    console.log('BaseTable ngOnInit - columns:', this.columns);
+  }
+
+  ngOnChanges() {
+    console.log('BaseTable ngOnChanges - data:', this.data);
+    console.log('BaseTable ngOnChanges - data length:', this.data?.length);
   }
   
   getFilterFields(): string[] {

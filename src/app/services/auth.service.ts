@@ -65,6 +65,8 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private tokenKey = 'hospital_token';
+  private initializationComplete = new BehaviorSubject<boolean>(false);
+  public initialized$ = this.initializationComplete.asObservable();
 
   constructor(
     private http: HttpClient
@@ -80,12 +82,17 @@ export class AuthService {
       this.validateToken().subscribe({
         next: (user) => {
           this.currentUserSubject.next(user);
+          this.initializationComplete.next(true);
         },
         error: () => {
           this.removeToken();
           this.currentUserSubject.next(null);
+          this.initializationComplete.next(true);
         }
       });
+    } else {
+      // No hay token, marcar como inicializado
+      this.initializationComplete.next(true);
     }
   }
 
@@ -138,13 +145,39 @@ export class AuthService {
     this.http.post(`${this.baseUrl}/auth/logout`, {}).pipe(
       catchError(() => of(null)) // Si falla, continuar con el logout local
     ).subscribe(() => {
-      this.removeToken();
-      this.currentUserSubject.next(null);
+      this.performLogout();
     });
   }
 
+  performLogout(): void {
+    this.removeToken();
+    this.currentUserSubject.next(null);
+  }
+
   validateToken(): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/usuarios/perfil`);
+    return this.http.get<any>(`${this.baseUrl}/usuarios/perfil`).pipe(
+      map(response => {
+        // Manejar la respuesta del backend que puede tener estructura diferente
+        if (response && response.data && response.data.length > 0) {
+          const userData = response.data[0];
+          return {
+            id: userData.id_usuario || userData.id,
+            nombre: userData.nombre,
+            apellido: userData.apellido,
+            email: userData.email,
+            rol: {
+              id: userData.id_rol || userData.rol?.id || 0,
+              nombre: userData.rol?.nombre || '',
+              permisos: userData.rol?.permisos || []
+            }
+          } as User;
+        } else if (response && response.id) {
+          // Si la respuesta ya tiene la estructura correcta
+          return response as User;
+        }
+        throw new Error('Respuesta inválida del servidor');
+      })
+    );
   }
 
   getCurrentUser(): User | null {
@@ -170,5 +203,9 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getToken() && !!this.getCurrentUser();
+  }
+
+  isInitialized(): boolean {
+    return this.initializationComplete.value;
   }
 }

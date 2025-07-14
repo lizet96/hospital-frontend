@@ -2,25 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseTableComponent, TableColumn, TableAction } from '../../../shared/components/base-table.component';
 import { BaseFormComponent, FormField } from '../../../shared/components/base-form.component';
-import { BaseCrudService, CrudResponse } from '../../../services/base-crud.service';
+import { ConsultasService, Consulta } from '../../../services/consultas.service';
+import { PacientesService } from '../../../services/pacientes.service';
+import { UsuariosService } from '../../../services/usuarios.service';
+import { HorariosService } from '../../../services/horarios.service';
+import { CrudResponse } from '../../../services/base-crud.service';
 import { AuthService } from '../../../services/auth.service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
 
-interface Consulta {
-  id_consulta?: number;
-  id_paciente: number;
-  id_medico: number;
-  fecha_consulta: string;
-  motivo: string;
-  diagnostico?: string;
-  tratamiento?: string;
-  observaciones?: string;
-  estado: string;
-  created_at?: string;
-  updated_at?: string;
-}
+
 
 @Component({
   selector: 'app-consultas-crud',
@@ -120,10 +112,13 @@ export class ConsultasCrudComponent implements OnInit {
     { field: 'id_consulta', header: 'ID', sortable: true, filterable: true },
     { field: 'paciente_nombre', header: 'Paciente', sortable: true, filterable: true },
     { field: 'medico_nombre', header: 'Médico', sortable: true, filterable: true },
-    { field: 'fecha_consulta', header: 'Fecha', sortable: true, filterable: true, type: 'date' },
-    { field: 'motivo', header: 'Motivo', sortable: true, filterable: true },
-    { field: 'estado', header: 'Estado', sortable: true, filterable: true },
-    { field: 'created_at', header: 'Creado', sortable: true, type: 'date' }
+    { field: 'tipo', header: 'Tipo', sortable: true, filterable: true },
+    { field: 'diagnostico', header: 'Diagnóstico', sortable: true, filterable: true },
+    { field: 'costo', header: 'Costo', sortable: true, filterable: true, type: 'number' },
+    { field: 'hora', header: 'Hora', sortable: true, filterable: true, type: 'date' },
+    { field: 'consultorio_nombre', header: 'Consultorio', sortable: true, filterable: true },
+    { field: 'horario_turno', header: 'Turno', sortable: true, filterable: true },
+    { field: 'id_horario', header: 'Horario ID', sortable: true, filterable: true }
   ];
 
   actions: TableAction[] = [];
@@ -144,16 +139,29 @@ export class ConsultasCrudComponent implements OnInit {
       options: [] // Se cargarán dinámicamente
     },
     {
-      key: 'fecha_consulta',
-      label: 'Fecha de Consulta',
-      type: 'date',
+      key: 'id_horario',
+      label: 'Horario',
+      type: 'select',
+      required: true,
+      options: [] // Se cargarán dinámicamente
+    },
+    {
+      key: 'hora',
+      label: 'Hora de la Consulta',
+      type: 'datetime',
       required: true
     },
     {
-      key: 'motivo',
-      label: 'Motivo',
-      type: 'textarea',
-      required: true
+      key: 'tipo',
+      label: 'Tipo de Consulta',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'Consulta General', value: 'general' },
+        { label: 'Consulta Especializada', value: 'especializada' },
+        { label: 'Urgencia', value: 'urgencia' },
+        { label: 'Control', value: 'control' }
+      ]
     },
     {
       key: 'diagnostico',
@@ -161,31 +169,18 @@ export class ConsultasCrudComponent implements OnInit {
       type: 'textarea'
     },
     {
-      key: 'tratamiento',
-      label: 'Tratamiento',
-      type: 'textarea'
-    },
-    {
-      key: 'observaciones',
-      label: 'Observaciones',
-      type: 'textarea'
-    },
-    {
-      key: 'estado',
-      label: 'Estado',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Programada', value: 'programada' },
-        { label: 'En Curso', value: 'en_curso' },
-        { label: 'Completada', value: 'completada' },
-        { label: 'Cancelada', value: 'cancelada' }
-      ]
+      key: 'costo',
+      label: 'Costo',
+      type: 'number',
+      required: true
     }
   ];
 
   constructor(
-    private crudService: BaseCrudService<Consulta>,
+    private crudService: ConsultasService,
+    private pacientesService: PacientesService,
+    private usuariosService: UsuariosService,
+    private horariosService: HorariosService,
     private authService: AuthService,
     private messageService: MessageService
   ) {}
@@ -257,26 +252,39 @@ export class ConsultasCrudComponent implements OnInit {
 
   private loadSelectOptions() {
     // Cargar pacientes
-    this.crudService.getAll().subscribe({
+    this.pacientesService.getAll().subscribe({
       next: (response: CrudResponse<any[]>) => {
         const pacientesField = this.formFields.find(f => f.key === 'id_paciente');
         if (pacientesField && response.data) {
           pacientesField.options = response.data.map((p: any) => ({
             label: `${p.nombre} ${p.apellido}`,
-            value: p.id_usuario
+            value: p.id || p.id_usuario
           }));
         }
       }
     });
 
-    // Cargar médicos
-    this.crudService.getAll().subscribe({
+    // Cargar médicos (usuarios con rol médico)
+    this.usuariosService.getByRole(2).subscribe({
       next: (response: CrudResponse<any[]>) => {
         const medicosField = this.formFields.find(f => f.key === 'id_medico');
         if (medicosField && response.data) {
           medicosField.options = response.data.map((m: any) => ({
-            label: `${m.nombre} ${m.apellido}`,
+            label: `${m.nombre} ${m.apellido || ''}`,
             value: m.id_usuario
+          }));
+        }
+      }
+    });
+
+    // Cargar horarios disponibles
+    this.horariosService.getDisponibles().subscribe({
+      next: (response: CrudResponse<any[]>) => {
+        const horariosField = this.formFields.find(f => f.key === 'id_horario');
+        if (horariosField && response.data) {
+          horariosField.options = response.data.map((h: any) => ({
+            label: `${h.turno} - ${h.fecha_hora} (${h.medico_nombre})`,
+            value: h.id_horario
           }));
         }
       }

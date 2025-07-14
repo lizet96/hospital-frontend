@@ -15,7 +15,7 @@ export interface CrudResponse<T> {
   providedIn: 'root'
 })
 export abstract class BaseCrudService<T, CreateRequest = Partial<T>, UpdateRequest = Partial<T>> {
-  protected baseUrl = environment.apiUrl || 'http://localhost:8080/api';
+  protected baseUrl = environment.apiUrl || 'http://localhost:3000/api/v1';
   protected abstract endpoint: string;
   
   constructor(protected http: HttpClient) {}

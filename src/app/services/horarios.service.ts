@@ -4,41 +4,32 @@ import { BaseCrudService, CrudResponse } from './base-crud.service';
 
 export interface Horario {
   id_horario?: number;
+  turno: string;
   id_medico: number;
   id_consultorio: number;
-  dia_semana: string;
-  hora_inicio: string;
-  hora_fin: string;
-  fecha_inicio: string;
-  fecha_fin?: string;
-  estado: string;
-  observaciones?: string;
+  consulta_disponible: boolean;
+  fecha_hora?: string;
   created_at?: string;
   updated_at?: string;
+  // Campos adicionales para mostrar información relacionada
+  medico_nombre?: string;
+  consultorio_nombre?: string;
 }
 
 export interface CreateHorarioRequest {
+  turno: string;
   id_medico: number;
   id_consultorio: number;
-  dia_semana: string;
-  hora_inicio: string;
-  hora_fin: string;
-  fecha_inicio: string;
-  fecha_fin?: string;
-  estado: string;
-  observaciones?: string;
+  consulta_disponible?: boolean;
+  fecha_hora?: string;
 }
 
 export interface UpdateHorarioRequest {
+  turno?: string;
   id_medico?: number;
   id_consultorio?: number;
-  dia_semana?: string;
-  hora_inicio?: string;
-  hora_fin?: string;
-  fecha_inicio?: string;
-  fecha_fin?: string;
-  estado?: string;
-  observaciones?: string;
+  consulta_disponible?: boolean;
+  fecha_hora?: string;
 }
 
 @Injectable({

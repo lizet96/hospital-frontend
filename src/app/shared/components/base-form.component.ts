@@ -4,16 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextarea } from 'primeng/inputtextarea';
-import { DropdownModule } from 'primeng/dropdown';
-import { CalendarModule } from 'primeng/calendar';
+import { Textarea } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 
 export interface FormField {
   key: string;
   label: string;
-  type: 'text' | 'number' | 'date' | 'datetime' | 'time' | 'textarea' | 'select' | 'dropdown' | 'checkbox' | 'email' | 'password';
+  type: 'text' | 'number' | 'date' | 'datetime' | 'datetime-local' | 'time' | 'textarea' | 'select' | 'dropdown' | 'checkbox' | 'email' | 'password';
   required?: boolean;
   options?: { label: string; value: any }[];
   placeholder?: string;
@@ -31,8 +31,8 @@ export interface FormField {
   standalone: true,
   imports: [
     CommonModule, FormsModule, DialogModule, ButtonModule,
-    InputTextModule, InputTextarea, DropdownModule,
-    CalendarModule, CheckboxModule, InputNumberModule
+    InputTextModule, Textarea, SelectModule,
+    DatePickerModule, CheckboxModule, InputNumberModule
   ],
   template: `
     <p-dialog 
@@ -104,7 +104,7 @@ export interface FormField {
               <!-- Textarea -->
               <textarea 
                 *ngSwitchCase="'textarea'"
-                pInputTextarea 
+                pTextarea 
                 [id]="field.key"
                 [(ngModel)]="formData[field.key]"
                 [name]="field.key"
@@ -129,7 +129,7 @@ export interface FormField {
               </p-inputNumber>
               
               <!-- Date Input -->
-              <p-calendar 
+              <p-datePicker 
                 *ngSwitchCase="'date'"
                 [id]="field.key"
                 [(ngModel)]="formData[field.key]"
@@ -139,10 +139,10 @@ export interface FormField {
                 dateFormat="dd/mm/yy"
                 [showIcon]="true"
                 styleClass="hospital-calendar">
-              </p-calendar>
+              </p-datePicker>
               
               <!-- Select/Dropdown -->
-              <p-dropdown 
+              <p-select 
                 *ngSwitchCase="'select'"
                 [id]="field.key"
                 [(ngModel)]="formData[field.key]"
@@ -152,7 +152,7 @@ export interface FormField {
                 [required]="field.required || false"
                 [disabled]="field.disabled || false"
                 styleClass="hospital-dropdown">
-              </p-dropdown>
+              </p-select>
               
               <!-- Checkbox -->
               <div class="checkbox-wrapper">
@@ -291,30 +291,30 @@ export interface FormField {
       outline: none;
     }
     
-    /* Dropdown personalizado */
-    ::ng-deep .hospital-dropdown .p-dropdown {
+    /* Select personalizado */
+    ::ng-deep .hospital-dropdown .p-select {
       border: 2px solid #e1e5e9;
       border-radius: 8px;
       transition: all 0.3s ease;
     }
     
-    ::ng-deep .hospital-dropdown .p-dropdown:not(.p-disabled):hover {
+    ::ng-deep .hospital-dropdown .p-select:not(.p-disabled):hover {
       border-color: var(--hospital-primary);
     }
     
-    ::ng-deep .hospital-dropdown .p-dropdown:not(.p-disabled).p-focus {
+    ::ng-deep .hospital-dropdown .p-select:not(.p-disabled).p-focus {
       border-color: var(--hospital-primary);
       box-shadow: 0 0 0 3px rgba(5, 104, 94, 0.1);
     }
     
-    /* Calendar personalizado */
-    ::ng-deep .hospital-calendar .p-calendar .p-inputtext {
+    /* DatePicker personalizado */
+    ::ng-deep .hospital-calendar .p-datepicker .p-inputtext {
       border: 2px solid #e1e5e9;
       border-radius: 8px;
       transition: all 0.3s ease;
     }
     
-    ::ng-deep .hospital-calendar .p-calendar .p-inputtext:focus {
+    ::ng-deep .hospital-calendar .p-datepicker .p-inputtext:focus {
       border-color: var(--hospital-primary);
       box-shadow: 0 0 0 3px rgba(5, 104, 94, 0.1);
     }

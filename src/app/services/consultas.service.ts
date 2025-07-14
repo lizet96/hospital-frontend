@@ -10,6 +10,11 @@ export interface Consulta {
   id_paciente?: number;
   id_medico?: number;
   id_horario?: number;
+  hora?: string; // Hora específica de la consulta
+  paciente_nombre?: string; // Nombre del paciente
+  medico_nombre?: string; // Nombre del médico
+  consultorio_nombre?: string; // Nombre del consultorio
+  horario_turno?: string; // Fecha del horario
   paciente?: {
     id_usuario: number;
     nombre: string;
@@ -33,6 +38,7 @@ export interface CreateConsultaRequest {
   id_paciente: number;
   id_medico: number;
   id_horario: number;
+  hora: string; // Hora específica de la consulta
 }
 
 export interface UpdateConsultaRequest {
@@ -42,6 +48,7 @@ export interface UpdateConsultaRequest {
   id_paciente?: number;
   id_medico?: number;
   id_horario?: number;
+  hora?: string; // Hora específica de la consulta
 }
 
 @Injectable({

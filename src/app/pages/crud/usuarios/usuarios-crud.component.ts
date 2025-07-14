@@ -3,27 +3,22 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { BaseTableComponent, TableColumn, TableAction } from '../../../shared/components/base-table.component';
 import { BaseFormComponent, FormField } from '../../../shared/components/base-form.component';
-import { BaseCrudService, CrudResponse } from '../../../services/base-crud.service';
+import { CrudResponse } from '../../../services/base-crud.service';
+import { UsuariosService, Usuario } from '../../../services/usuarios.service';
 import { AuthService } from '../../../services/auth.service';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
-interface Usuario {
-  id_usuario?: number;
-  nombre: string;
-  apellido: string;
-  email: string;
-  fecha_nacimiento: string;
-  id_rol: number;
-  activo: boolean;
-  rol_nombre?: string;
+interface UsuarioExtended extends Usuario {
+  password?: string;
 }
 
 @Component({
   selector: 'app-usuarios-crud',
   standalone: true,
-  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ToastModule, ButtonModule],
-  providers: [MessageService],
+  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ToastModule, ButtonModule, ConfirmDialogModule],
+  providers: [MessageService, ConfirmationService],
   template: `
     <div class="usuarios-crud">
       <div class="crud-header">
@@ -31,7 +26,6 @@ interface Usuario {
           <h2>Gestión de Usuarios</h2>
           <p>Administra los usuarios del sistema hospitalario</p>
         </div>
-       
       </div>
       
       <app-base-table
@@ -39,20 +33,22 @@ interface Usuario {
         entityName="Usuario"
         [data]="usuarios"
         [columns]="columns"
-        [actions]="actions">
+        [actions]="actions"
+        (onCreate)="openCreateForm()">
       </app-base-table>
-
+      
       <app-base-form
-        *ngIf="showForm"
-        [title]="formTitle"
-        [fields]="formFields"
-        [formData]="currentUser"
         [visible]="showForm"
+        [formData]="currentUser"
+        [fields]="formFields"
+        [title]="formTitle"
         [loading]="loading"
         (save)="saveUser($event)"
         (cancel)="closeForm()"
         (visibleChange)="showForm = $event">
       </app-base-form>
+      
+      <p-confirmDialog></p-confirmDialog>
     </div>
   `,
   styles: [`
@@ -88,8 +84,8 @@ interface Usuario {
   `]
 })
 export class UsuariosCrudComponent implements OnInit {
-  usuarios: Usuario[] = [];
-  currentUser: Usuario = this.getEmptyUser();
+  usuarios: UsuarioExtended[] = [];
+  currentUser: UsuarioExtended = this.getEmptyUser();
   showForm = false;
   loading = false;
   isEditing = false;
@@ -126,7 +122,7 @@ export class UsuariosCrudComponent implements OnInit {
     }
   ];
   
-  formFields: FormField[] = [
+  baseFormFields: FormField[] = [
     {
       key: 'nombre',
       label: 'Nombre',
@@ -147,6 +143,13 @@ export class UsuariosCrudComponent implements OnInit {
       type: 'email',
       required: true,
       placeholder: 'Ingrese el email'
+    },
+    {
+      key: 'password',
+      label: 'Contraseña',
+      type: 'password',
+      required: true,
+      placeholder: 'Ingrese la contraseña'
     },
     {
       key: 'fecha_nacimiento',
@@ -172,14 +175,34 @@ export class UsuariosCrudComponent implements OnInit {
       type: 'checkbox'
     }
   ];
+
+  get formFields(): FormField[] {
+    if (this.isEditing) {
+      // Al editar, excluir el campo de contraseña
+      return this.baseFormFields.filter(field => field.key !== 'password');
+    } else {
+      // Al crear, incluir todos los campos
+      return this.baseFormFields;
+    }
+  }
   
   constructor(
-    private crudService: BaseCrudService<Usuario>,
+    private usuariosService: UsuariosService,
     private authService: AuthService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
   
   ngOnInit() {
+    // Verificar si el usuario está autenticado
+    if (!this.authService.isAuthenticated()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'Debe iniciar sesión para acceder a esta sección'
+      });
+      return;
+    }
     this.loadUsuarios();
   }
   
@@ -187,7 +210,7 @@ export class UsuariosCrudComponent implements OnInit {
     return this.isEditing ? 'Editar Usuario' : 'Crear Usuario';
   }
   
-  private getEmptyUser(): Usuario {
+  private getEmptyUser(): UsuarioExtended {
     return {
       nombre: '',
       apellido: '',
@@ -199,9 +222,13 @@ export class UsuariosCrudComponent implements OnInit {
   }
   
   loadUsuarios() {
-    this.crudService.getAll().subscribe({
+    console.log('Iniciando carga de usuarios...');
+    this.usuariosService.getAll().subscribe({
       next: (response: CrudResponse<Usuario[]>) => {
+        console.log('Respuesta del servidor:', response);
         this.usuarios = response.data || [];
+        console.log('Usuarios cargados:', this.usuarios);
+        console.log('Cantidad de usuarios:', this.usuarios.length);
       },
       error: (error: any) => {
         console.error('Error loading usuarios:', error);
@@ -224,52 +251,94 @@ export class UsuariosCrudComponent implements OnInit {
     this.showForm = false;
     this.currentUser = this.getEmptyUser();
     this.isEditing = false;
-    this.formFields.forEach(field => field.disabled = false);
+    this.baseFormFields.forEach(field => field.disabled = false);
   }
   
-  viewUser(user: Usuario) {
+  viewUser(user: UsuarioExtended) {
     this.isEditing = false;
     this.currentUser = { ...user };
-    this.formFields.forEach(field => field.disabled = true);
+    this.baseFormFields.forEach(field => field.disabled = true);
     this.showForm = true;
   }
   
-  editUser(user: Usuario) {
+  editUser(user: UsuarioExtended) {
     this.isEditing = true;
     this.currentUser = { ...user };
-    this.formFields.forEach(field => field.disabled = false);
+    
+    // Convertir fecha de nacimiento de string a Date para el DatePicker
+    if (this.currentUser.fecha_nacimiento && typeof this.currentUser.fecha_nacimiento === 'string') {
+      (this.currentUser as any).fecha_nacimiento = new Date(this.currentUser.fecha_nacimiento);
+    }
+    
+    this.baseFormFields.forEach(field => field.disabled = false);
     this.showForm = true;
   }
   
-  deleteUser(user: Usuario) {
-    if (confirm(`¿Está seguro de eliminar al usuario ${user.nombre} ${user.apellido}?`)) {
-      this.crudService.delete(user.id_usuario!).subscribe({
-        next: (response: CrudResponse<any>) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Usuario eliminado correctamente'
-          });
-          this.loadUsuarios();
-        },
-        error: (error: any) => {
-          console.error('Error deleting usuario:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al eliminar usuario'
-          });
-        }
-      });
-    }
+  deleteUser(user: UsuarioExtended) {
+    this.confirmationService.confirm({
+      message: `¿Está seguro de eliminar al usuario ${user.nombre} ${user.apellido}?`,
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.usuariosService.delete(user.id_usuario!).subscribe({
+          next: (response: CrudResponse<any>) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Usuario eliminado correctamente'
+            });
+            this.loadUsuarios();
+          },
+          error: (error: any) => {
+            console.error('Error deleting usuario:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Error al eliminar usuario'
+            });
+          }
+        });
+      }
+    });
   }
   
-  saveUser(userData: Usuario) {
+  saveUser(userData: UsuarioExtended) {
     this.loading = true;
     
-    const operation = this.isEditing 
-      ? this.crudService.update(this.currentUser.id_usuario!, userData)
-      : this.crudService.create(userData);
+    // Convertir fecha de Date a string en formato YYYY-MM-DD si es necesario
+    let fechaNacimiento: string | undefined = userData.fecha_nacimiento;
+    if ((userData as any).fecha_nacimiento instanceof Date) {
+      fechaNacimiento = ((userData as any).fecha_nacimiento as Date).toISOString().split('T')[0];
+    }
+    
+    let operation;
+    
+    if (this.isEditing) {
+      // Para actualizar, usar UpdateUsuarioRequest
+      const updateData = {
+        nombre: userData.nombre,
+        apellido: userData.apellido,
+        email: userData.email,
+        fecha_nacimiento: fechaNacimiento,
+        id_rol: userData.id_rol,
+        activo: userData.activo
+      };
+      operation = this.usuariosService.update(this.currentUser.id_usuario!, updateData);
+    } else {
+      // Para crear, usar CreateUsuarioRequest
+      const createData = {
+        nombre: userData.nombre,
+        apellido: userData.apellido || '',
+        email: userData.email || '',
+        password: userData.password || '',
+        fecha_nacimiento: fechaNacimiento || '',
+        id_rol: userData.id_rol || 1,
+        activo: userData.activo !== undefined ? userData.activo : true
+      };
+      operation = this.usuariosService.create(createData);
+    }
     
     operation.subscribe({
       next: (response: CrudResponse<Usuario>) => {

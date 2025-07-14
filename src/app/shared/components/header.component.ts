@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { AuthService, User } from '../../services/auth.service';
+import { SessionService, SessionInfo } from '../../services/session.service';
 import { Router } from '@angular/router';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -125,22 +127,78 @@ import { Router } from '@angular/router';
         font-size: 1.2rem;
       }
     }
+
+    ::ng-deep .p-menu {
+      min-width: 250px;
+    }
+
+    ::ng-deep .p-menu .p-menuitem-link {
+      padding: 0.75rem 1rem;
+    }
+
+    ::ng-deep .p-menu .p-menuitem-icon {
+      margin-right: 0.5rem;
+    }
+
+    ::ng-deep .p-menu .session-info .p-menuitem-link {
+      color: #6b7280;
+      font-size: 0.875rem;
+      cursor: default;
+    }
+
+    ::ng-deep .p-menu .session-warning .p-menuitem-link {
+      color: #dc2626;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: default;
+    }
+
+    ::ng-deep .p-menu .session-info .p-menuitem-link:hover,
+    ::ng-deep .p-menu .session-warning .p-menuitem-link:hover {
+      background: transparent !important;
+    }
   `]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
+  sessionInfo: SessionInfo | null = null;
   menuItems: MenuItem[] = [];
+  private subscriptions: Subscription[] = [];
+  timeUntilExpiration = 0;
 
   constructor(
     private authService: AuthService,
+    private sessionService: SessionService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    this.authService.currentUser$.subscribe(user => {
+    // Suscribirse a cambios del usuario
+    const userSub = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.setupMenu();
     });
+    this.subscriptions.push(userSub);
+
+    // Suscribirse a información de sesión
+    const sessionSub = this.sessionService.sessionInfo$.subscribe(sessionInfo => {
+      this.sessionInfo = sessionInfo;
+      this.setupMenu();
+    });
+    this.subscriptions.push(sessionSub);
+
+    // Actualizar tiempo hasta expiración cada minuto
+    const timerSub = interval(60000).subscribe(() => {
+      if (this.sessionService.isSessionActive()) {
+        this.timeUntilExpiration = this.sessionService.getTimeUntilExpiration();
+        this.setupMenu();
+      }
+    });
+    this.subscriptions.push(timerSub);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   getInitials(): string {
@@ -150,19 +208,6 @@ export class HeaderComponent implements OnInit {
 
   private setupMenu() {
     this.menuItems = [
-      {
-        label: 'Mi Perfil',
-        icon: 'pi pi-user',
-        command: () => this.goToProfile()
-      },
-      {
-        label: 'Configuración',
-        icon: 'pi pi-cog',
-        command: () => this.goToSettings()
-      },
-      {
-        separator: true
-      },
       {
         label: 'Cerrar Sesión',
         icon: 'pi pi-sign-out',
@@ -179,8 +224,11 @@ export class HeaderComponent implements OnInit {
     // Implementar navegación a configuración
   }
 
+  private extendSession() {
+    this.sessionService.extendSession();
+  }
+
   private logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.sessionService.logout();
   }
 }

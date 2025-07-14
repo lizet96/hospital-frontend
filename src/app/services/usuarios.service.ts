@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { BaseCrudService, CrudResponse } from './base-crud.service';
+
+// Re-export CrudResponse for components that import from this service
+export type { CrudResponse } from './base-crud.service';
 
 export interface Usuario {
   id_usuario?: number;
@@ -9,6 +12,9 @@ export interface Usuario {
   email?: string;
   fecha_nacimiento?: string;
   tipo?: string;
+  id_rol?: number;
+  rol_nombre?: string;
+  activo?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -17,8 +23,10 @@ export interface CreateUsuarioRequest {
   nombre: string;
   apellido?: string;
   email?: string;
+  password: string;
   fecha_nacimiento?: string;
-  tipo?: string;
+  id_rol: number;
+  activo?: boolean;
 }
 
 export interface UpdateUsuarioRequest {
@@ -26,7 +34,8 @@ export interface UpdateUsuarioRequest {
   apellido?: string;
   email?: string;
   fecha_nacimiento?: string;
-  tipo?: string;
+  id_rol?: number;
+  activo?: boolean;
 }
 
 @Injectable({
@@ -34,6 +43,18 @@ export interface UpdateUsuarioRequest {
 })
 export class UsuariosService extends BaseCrudService<Usuario, CreateUsuarioRequest, UpdateUsuarioRequest> {
   protected override endpoint = 'usuarios';
+
+  // Sobrescribir getAll para manejar la estructura específica del backend
+  override getAll(): Observable<CrudResponse<Usuario[]>> {
+    return this.http.get<{usuarios: Usuario[], total: number}>(`${this.baseUrl}/${this.endpoint}`)
+      .pipe(
+        map(response => ({
+          success: true,
+          data: response.usuarios || [],
+          total: response.total || 0
+        }))
+      );
+  }
 
   // Método específico para obtener usuarios por rol
   getByRole(rolId: number): Observable<CrudResponse<Usuario[]>> {

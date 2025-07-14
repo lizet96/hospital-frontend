@@ -111,10 +111,9 @@ export class HorariosCrudComponent implements OnInit {
     { field: 'id_horario', header: 'ID', sortable: true, filterable: true },
     { field: 'medico_nombre', header: 'Médico', sortable: true, filterable: true },
     { field: 'consultorio_nombre', header: 'Consultorio', sortable: true, filterable: true },
-    { field: 'dia_semana', header: 'Día', sortable: true, filterable: true },
-    { field: 'hora_inicio', header: 'Hora Inicio', sortable: true, filterable: true },
-    { field: 'hora_fin', header: 'Hora Fin', sortable: true, filterable: true },
-    { field: 'estado', header: 'Estado', sortable: true, filterable: true }
+    { field: 'turno', header: 'Turno', sortable: true, filterable: true },
+    { field: 'consulta_disponible', header: 'Disponible', sortable: true, filterable: true },
+    { field: 'fecha_hora', header: 'Fecha/Hora', sortable: true, filterable: true }
   ];
 
   actions: TableAction[] = [];
@@ -135,58 +134,27 @@ export class HorariosCrudComponent implements OnInit {
       options: []
     },
     {
-      key: 'dia_semana',
-      label: 'Día de la Semana',
+      key: 'turno',
+      label: 'Turno',
       type: 'select',
       required: true,
       options: [
-        { label: 'Lunes', value: 'lunes' },
-        { label: 'Martes', value: 'martes' },
-        { label: 'Miércoles', value: 'miercoles' },
-        { label: 'Jueves', value: 'jueves' },
-        { label: 'Viernes', value: 'viernes' },
-        { label: 'Sábado', value: 'sabado' },
-        { label: 'Domingo', value: 'domingo' }
+        { label: 'Mañana', value: 'mañana' },
+        { label: 'Tarde', value: 'tarde' },
+        { label: 'Noche', value: 'noche' }
       ]
     },
     {
-      key: 'hora_inicio',
-      label: 'Hora de Inicio',
-      type: 'time',
+      key: 'fecha_hora',
+      label: 'Fecha y Hora',
+      type: 'datetime-local',
       required: true
     },
     {
-      key: 'hora_fin',
-      label: 'Hora de Fin',
-      type: 'time',
-      required: true
-    },
-    {
-      key: 'fecha_inicio',
-      label: 'Fecha de Inicio',
-      type: 'date',
-      required: true
-    },
-    {
-      key: 'fecha_fin',
-      label: 'Fecha de Fin',
-      type: 'date'
-    },
-    {
-      key: 'estado',
-      label: 'Estado',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Activo', value: 'activo' },
-        { label: 'Inactivo', value: 'inactivo' },
-        { label: 'Suspendido', value: 'suspendido' }
-      ]
-    },
-    {
-      key: 'observaciones',
-      label: 'Observaciones',
-      type: 'textarea'
+      key: 'consulta_disponible',
+      label: 'Consulta Disponible',
+      type: 'checkbox',
+      required: false
     }
   ];
 
