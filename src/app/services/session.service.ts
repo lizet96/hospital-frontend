@@ -2,7 +2,7 @@ import { Injectable, Inject, forwardRef } from '@angular/core';
 import { BehaviorSubject, Observable, timer, of } from 'rxjs';
 import { AuthService, User } from './auth.service';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { AlertService } from './alert.service';
 
 export interface SessionInfo {
   user: User | null;
@@ -34,7 +34,7 @@ export class SessionService {
   constructor(
     @Inject(forwardRef(() => AuthService)) private authService: AuthService,
     private router: Router,
-    private messageService: MessageService
+    private alertService: AlertService
   ) {
     this.initializeSession();
     this.setupActivityListeners();
@@ -98,12 +98,7 @@ export class SessionService {
     this.saveSessionToStorage(sessionInfo);
     this.startSessionTimer();
     
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Sesión iniciada',
-      detail: `Bienvenido ${user.nombre} ${user.apellido}`,
-      life: 3000
-    });
+    this.alertService.success(`Bienvenido ${user.nombre} ${user.apellido}`, true, 3000);
   }
 
   private endSession() {
@@ -146,22 +141,11 @@ export class SessionService {
   }
 
   private showSessionWarning() {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Sesión por expirar',
-      detail: `Tu sesión expirará en ${this.WARNING_TIME} minutos. Realiza alguna acción para mantenerla activa.`,
-      life: 10000,
-      sticky: true
-    });
+    this.alertService.warning(`Tu sesión expirará en ${this.WARNING_TIME} minutos. Realiza alguna acción para mantenerla activa.`, true, 10000);
   }
 
   private expireSession() {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Sesión expirada',
-      detail: 'Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.',
-      life: 5000
-    });
+    this.alertService.error('Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.', true, 5000);
 
     this.logout();
   }
@@ -246,24 +230,14 @@ export class SessionService {
 
   extendSession(): void {
     this.updateLastActivity();
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Sesión extendida',
-      detail: 'Tu sesión ha sido extendida exitosamente.',
-      life: 3000
-    });
+    this.alertService.info('Tu sesión ha sido extendida exitosamente.', true, 3000);
   }
 
   logout(): void {
     this.authService.performLogout();
     this.router.navigate(['/auth/login']);
     
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Sesión cerrada',
-      detail: 'Has cerrado sesión exitosamente.',
-      life: 3000
-    });
+    this.alertService.info('Has cerrado sesión exitosamente.', true, 3000);
   }
 
   getSessionDurationFormatted(): string {

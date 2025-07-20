@@ -10,7 +10,17 @@
     <div class="auth-form">
       <h1>Crear Cuenta</h1>
       <p class="subtitle">Completa tus datos para registrarte en el sistema</p>
- <form (ngSubmit)="onRegister()">
+      
+      <!-- Mensaje inline -->
+      <app-custom-alert 
+        [show]="showMessage" 
+        [type]="messageSeverity" 
+        [message]="messageText" 
+        [closable]="true" 
+        (close)="hideMessage()">
+      </app-custom-alert>
+      
+      <form (ngSubmit)="onRegister()">
   <!-- Nombre -->
   <div class="p-inputgroup mb-3">
     <span class="p-inputgroup-addon">
@@ -112,18 +122,6 @@
 </div>
 
 
-
-  <!-- Términos y condiciones -->
-  <div class="mb-3">
-    <p-checkbox
-      [(ngModel)]="registerData.acceptTerms"
-      name="acceptTerms"
-      binary="true"
-      inputId="acceptTerms"
-      required>
-    </p-checkbox>
-    <label for="acceptTerms" class="ml-2">Acepto los términos y condiciones</label>
-  </div>
 
   <!-- Botón -->
   <button type="submit" class="auth-btn">

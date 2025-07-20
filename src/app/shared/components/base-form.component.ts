@@ -18,6 +18,7 @@ export interface FormField {
   options?: { label: string; value: any }[];
   placeholder?: string;
   disabled?: boolean;
+  onChange?: (value: any) => void;
   validation?: {
     min?: number;
     max?: number;
@@ -141,6 +142,17 @@ export interface FormField {
                 styleClass="hospital-calendar">
               </p-datePicker>
               
+              <!-- Time Input -->
+              <input 
+                *ngSwitchCase="'time'"
+                type="time"
+                [id]="field.key"
+                [(ngModel)]="formData[field.key]"
+                [name]="field.key"
+                [required]="field.required || false"
+                [disabled]="field.disabled || false"
+                class="hospital-input" />
+              
               <!-- Select/Dropdown -->
               <p-select 
                 *ngSwitchCase="'select'"
@@ -151,6 +163,7 @@ export interface FormField {
                 [placeholder]="field.placeholder"
                 [required]="field.required || false"
                 [disabled]="field.disabled || false"
+                (onChange)="field.onChange && field.onChange($event.value)"
                 styleClass="hospital-dropdown">
               </p-select>
               

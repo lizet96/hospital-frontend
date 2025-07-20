@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { BaseCrudService, CrudResponse } from './base-crud.service';
+import { BaseCrudService, CrudResponse, StandardResponse } from './base-crud.service';
 
 // Re-export CrudResponse for components that import from this service
 export type { CrudResponse } from './base-crud.service';
@@ -44,25 +44,33 @@ export interface UpdateUsuarioRequest {
 export class UsuariosService extends BaseCrudService<Usuario, CreateUsuarioRequest, UpdateUsuarioRequest> {
   protected override endpoint = 'usuarios';
 
-  // Sobrescribir getAll para manejar la estructura específica del backend
-  override getAll(): Observable<CrudResponse<Usuario[]>> {
-    return this.http.get<{usuarios: Usuario[], total: number}>(`${this.baseUrl}/${this.endpoint}`)
-      .pipe(
-        map(response => ({
-          success: true,
-          data: response.usuarios || [],
-          total: response.total || 0
-        }))
-      );
-  }
-
   // Método específico para obtener usuarios por rol
   getByRole(rolId: number): Observable<CrudResponse<Usuario[]>> {
-    return this.http.get<CrudResponse<Usuario[]>>(`${this.baseUrl}/${this.endpoint}/role/${rolId}`);
+    return this.http.get<any>(`${this.baseUrl}/${this.endpoint}/role/${rolId}`).pipe(
+      map(response => {
+        // La respuesta viene directamente como {success, data, total}
+        return {
+          success: response.success || false,
+          data: response.data || [],
+          total: response.total || 0,
+          message: response.success ? 'Usuarios obtenidos correctamente' : 'Error al obtener usuarios'
+        };
+      })
+    );
   }
 
   // Método para obtener roles disponibles
   getRoles(): Observable<CrudResponse<any[]>> {
-    return this.http.get<CrudResponse<any[]>>(`${this.baseUrl}/roles`);
+    return this.http.get<any>(`${this.baseUrl}/roles`).pipe(
+      map(response => {
+        // La respuesta viene directamente como {success, data, total}
+        return {
+          success: response.success || false,
+          data: response.data || [],
+          total: response.total || 0,
+          message: response.success ? 'Roles obtenidos correctamente' : 'Error al obtener roles'
+        };
+      })
+    );
   }
 }

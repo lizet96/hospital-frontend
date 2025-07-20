@@ -5,8 +5,8 @@ import { BaseTableComponent, TableColumn, TableAction } from '../../../shared/co
 import { BaseFormComponent, FormField } from '../../../shared/components/base-form.component';
 import { UsuariosService, Usuario, CrudResponse } from '../../../services/usuarios.service';
 import { AuthService } from '../../../services/auth.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import { ConfirmationService } from 'primeng/api';
+import { AlertService } from '../../../services/alert.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 interface PacienteExtended extends Usuario {
@@ -16,8 +16,8 @@ interface PacienteExtended extends Usuario {
 @Component({
   selector: 'app-pacientes-crud',
   standalone: true,
-  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ToastModule, ButtonModule, ConfirmDialogModule],
-  providers: [MessageService, ConfirmationService],
+  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ButtonModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   template: `
     <div class="pacientes-crud">
       <div class="crud-header">
@@ -149,7 +149,7 @@ export class PacientesCrudComponent implements OnInit {
   constructor(
     private usuariosService: UsuariosService,
     private authService: AuthService,
-    private messageService: MessageService,
+    private alertService: AlertService,
     private confirmationService: ConfirmationService
   ) {}
 
@@ -171,11 +171,7 @@ export class PacientesCrudComponent implements OnInit {
         this.loading = false;
       },
       error: (_error: any) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar pacientes'
-        });
+        this.alertService.errorLoad('pacientes', 'No se pudieron cargar los datos del servidor');
         this.loading = false;
       }
     });
@@ -204,6 +200,7 @@ export class PacientesCrudComponent implements OnInit {
     this.showForm = false;
     this.selectedPaciente = null;
     this.isEditing = false;
+    this.formLoading = false;
     // Resetear el campo de contraseña como requerido por defecto
     this.formFields.find(field => field.key === 'password')!.required = true;
   }
@@ -231,19 +228,11 @@ export class PacientesCrudComponent implements OnInit {
       accept: () => {
         this.usuariosService.delete(paciente.id_usuario!).subscribe({
           next: (response: CrudResponse<any>) => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Éxito',
-              detail: response.message || 'Paciente eliminado correctamente'
-            });
+            this.alertService.successDelete('Paciente');
             this.loadPacientes();
           },
           error: (error) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: error.error?.message || 'Error al eliminar el paciente'
-            });
+            this.alertService.errorDelete('paciente', 'No se pudo completar la operación');
           }
         });
       }
@@ -251,6 +240,63 @@ export class PacientesCrudComponent implements OnInit {
   }
 
   saveUser(userData: any) {
+    // Validaciones del lado del cliente (igual que en register)
+    const missingFields: string[] = [];
+    
+    if (!userData.nombre?.trim()) {
+      missingFields.push('Nombre');
+    }
+    if (!userData.apellido?.trim()) {
+      missingFields.push('Apellido');
+    }
+    if (!userData.email?.trim()) {
+      missingFields.push('Correo electrónico');
+    }
+    if (!this.isEditing && (!userData.password?.trim())) {
+      missingFields.push('Contraseña');
+    }
+    if (!userData.fecha_nacimiento) {
+      missingFields.push('Fecha de nacimiento');
+    }
+
+    if (missingFields.length > 0) {
+      this.alertService.errorCreate('paciente', `Campos obligatorios faltantes: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userData.email)) {
+      this.alertService.errorCreate('paciente', 'Correo electrónico inválido. Por favor, ingrese un correo válido (ejemplo: usuario@dominio.com)');
+      return;
+    }
+
+    // Validar contraseña solo si no estamos editando o si se proporcionó una nueva contraseña
+    if (!this.isEditing || (userData.password && userData.password.trim() !== '')) {
+      // Validar longitud de contraseña
+      if (userData.password.length < 12) {
+        this.alertService.errorCreate('paciente', 'Contraseña muy corta. La contraseña debe tener al menos 12 caracteres');
+        return;
+      }
+
+      // Validar complejidad de contraseña
+      const hasUpperCase = /[A-Z]/.test(userData.password);
+      const hasLowerCase = /[a-z]/.test(userData.password);
+      const hasNumbers = /\d/.test(userData.password);
+      const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(userData.password);
+      
+      const missingRequirements: string[] = [];
+      if (!hasUpperCase) missingRequirements.push('al menos una letra mayúscula');
+      if (!hasLowerCase) missingRequirements.push('al menos una letra minúscula');
+      if (!hasNumbers) missingRequirements.push('al menos un número');
+      if (!hasSpecialChar) missingRequirements.push('al menos un carácter especial (!@#$%^&*()_+-=[]{}|;:,.<>?)');
+      
+      if (missingRequirements.length > 0) {
+        this.alertService.errorCreate('paciente', `Contraseña no cumple los requisitos. Debe contener: ${missingRequirements.join(', ')}`);
+        return;
+      }
+    }
+
     this.formLoading = true;
     
     // Convertir fecha de Date a string si es necesario
@@ -273,24 +319,60 @@ export class PacientesCrudComponent implements OnInit {
       
       this.usuariosService.update(this.selectedPaciente.id_usuario, updateData).subscribe({
         next: (response: CrudResponse<Usuario>) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Paciente actualizado correctamente'
-          });
+          this.formLoading = false;
+          this.alertService.successUpdate('Paciente');
           this.closeForm();
           this.loadPacientes();
         },
-        error: (_error: any) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al actualizar paciente'
-          });
-        },
-        complete: () => {
-          this.formLoading = false;
-        }
+        error: (error: any) => {
+           this.formLoading = false;
+           console.log('Error completo (update):', error);
+           console.log('error.error (update):', error.error);
+           console.log('error.error.body (update):', error.error?.body);
+           console.log('error.error.body.data (update):', error.error?.body?.data);
+           
+           let errorMessage = 'Verifique que todos los datos sean válidos';
+           
+           // Manejar códigos de estado HTTP específicos (igual que en register)
+           if (error.status === 409) {
+             // Correo duplicado
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               errorMessage = error.error.body.data[0].error;
+             } else {
+               errorMessage = 'El correo electrónico ya está registrado. Por favor, use un correo diferente.';
+             }
+           } else if (error.status === 400) {
+             // Error de validación
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               const serverError = error.error.body.data[0].error;
+               // Verificar si es un error de correo duplicado
+               if (serverError && (serverError.toLowerCase().includes('email') || serverError.toLowerCase().includes('correo')) && 
+                   (serverError.toLowerCase().includes('registrado') || serverError.toLowerCase().includes('existe') || serverError.toLowerCase().includes('duplicado'))) {
+                 errorMessage = 'El correo electrónico ya está registrado. Por favor, use un correo diferente.';
+               } else {
+                 errorMessage = serverError || 'Los datos proporcionados no son válidos. Por favor, revise la información ingresada.';
+               }
+             } else {
+               errorMessage = 'Los datos proporcionados no son válidos. Por favor, revise la información ingresada.';
+             }
+           } else if (error.status === 500) {
+             // Error del servidor
+             errorMessage = 'Error interno del servidor. Por favor, intente nuevamente más tarde.';
+           } else if (error.status === 0) {
+             // Error de conexión
+             errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión a internet.';
+           } else {
+             // Otros errores
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               errorMessage = error.error.body.data[0].error || errorMessage;
+             } else if (error.message) {
+               errorMessage = error.message;
+             }
+           }
+           
+           console.log('Mensaje final (update):', errorMessage);
+           this.alertService.errorUpdate('paciente', errorMessage);
+         }
       });
     } else {
       const createData = { ...dataToSend };
@@ -298,24 +380,60 @@ export class PacientesCrudComponent implements OnInit {
       
       this.usuariosService.create(createData).subscribe({
         next: (response: CrudResponse<Usuario>) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Paciente creado correctamente'
-          });
+          this.formLoading = false;
+          this.alertService.successCreate('Paciente');
           this.closeForm();
           this.loadPacientes();
         },
-        error: (_error: any) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al crear paciente'
-          });
-        },
-        complete: () => {
-          this.formLoading = false;
-        }
+        error: (error: any) => {
+           this.formLoading = false;
+           console.log('Error completo:', error);
+           console.log('error.error:', error.error);
+           console.log('error.error.body:', error.error?.body);
+           console.log('error.error.body.data:', error.error?.body?.data);
+           
+           let errorMessage = 'Verifique que todos los datos sean válidos';
+           
+           // Manejar códigos de estado HTTP específicos (igual que en register)
+           if (error.status === 409) {
+             // Correo duplicado
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               errorMessage = error.error.body.data[0].error;
+             } else {
+               errorMessage = 'El correo electrónico ya está registrado. Por favor, use un correo diferente.';
+             }
+           } else if (error.status === 400) {
+             // Error de validación
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               const serverError = error.error.body.data[0].error;
+               // Verificar si es un error de correo duplicado
+               if (serverError && (serverError.toLowerCase().includes('email') || serverError.toLowerCase().includes('correo')) && 
+                   (serverError.toLowerCase().includes('registrado') || serverError.toLowerCase().includes('existe') || serverError.toLowerCase().includes('duplicado'))) {
+                 errorMessage = 'El correo electrónico ya está registrado. Por favor, use un correo diferente.';
+               } else {
+                 errorMessage = serverError || 'Los datos proporcionados no son válidos. Por favor, revise la información ingresada.';
+               }
+             } else {
+               errorMessage = 'Los datos proporcionados no son válidos. Por favor, revise la información ingresada.';
+             }
+           } else if (error.status === 500) {
+             // Error del servidor
+             errorMessage = 'Error interno del servidor. Por favor, intente nuevamente más tarde.';
+           } else if (error.status === 0) {
+             // Error de conexión
+             errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión a internet.';
+           } else {
+             // Otros errores
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               errorMessage = error.error.body.data[0].error || errorMessage;
+             } else if (error.message) {
+               errorMessage = error.message;
+             }
+           }
+           
+           console.log('Mensaje final:', errorMessage);
+           this.alertService.errorCreate('paciente', errorMessage);
+         }
       });
     }
   }

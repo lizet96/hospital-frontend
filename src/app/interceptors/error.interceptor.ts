@@ -10,6 +10,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      // No interceptar errores de autenticación (login, register, mfa) para permitir manejo específico
+      if (req.url.includes('/auth/login') || req.url.includes('/auth/register') || req.url.includes('/auth/mfa')) {
+        return throwError(() => error);
+      }
+      
       let errorMessage = 'Ha ocurrido un error';
       
       if (error.error instanceof ErrorEvent) {
@@ -19,9 +24,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         // Error del lado del servidor
         switch (error.status) {
           case 401:
-            errorMessage = 'No autorizado. Por favor, inicia sesión nuevamente.';
-            authService.logout();
-            router.navigate(['/auth/login']);
+            // Evitar bucle infinito: no hacer logout automático si la URL es logout
+            if (!req.url.includes('/auth/logout')) {
+              errorMessage = 'No autorizado. Por favor, inicia sesión nuevamente.';
+              authService.performLogout(); // Usar performLogout en lugar de logout para evitar llamada HTTP
+              router.navigate(['/auth/login']);
+            } else {
+              // Si es un error en logout, solo limpiar localmente
+              errorMessage = 'Error al cerrar sesión en el servidor, pero la sesión local ha sido limpiada.';
+              authService.performLogout();
+            }
             break;
           case 403:
             errorMessage = 'No tienes permisos para realizar esta acción.';
@@ -41,7 +53,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
       
-      console.error('HTTP Error:', error);
       return throwError(() => ({ message: errorMessage, originalError: error }));
     })
   );

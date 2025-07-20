@@ -7,15 +7,15 @@ import {
   BaseStyle
 } from "./chunk-4GDQ6IK7.js";
 import {
-  NG_VALUE_ACCESSOR,
-  NgControl
-} from "./chunk-C72UDH2J.js";
-import {
   PrimeTemplate,
   SharedModule,
   contains,
   equals
 } from "./chunk-GQIVO6LQ.js";
+import {
+  NG_VALUE_ACCESSOR,
+  NgControl
+} from "./chunk-C72UDH2J.js";
 import {
   CommonModule,
   NgClass,
@@ -857,4 +857,4 @@ export {
   Checkbox,
   CheckboxModule
 };
-//# sourceMappingURL=chunk-3RRLX7YZ.js.map
+//# sourceMappingURL=chunk-36XIPI2S.js.map

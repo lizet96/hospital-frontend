@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BaseCrudService, CrudResponse } from './base-crud.service';
+import { Observable, map } from 'rxjs';
+import { BaseCrudService, CrudResponse, StandardResponse } from './base-crud.service';
 
 export interface Paciente {
   id?: number;
@@ -46,7 +46,17 @@ export class PacientesService extends BaseCrudService<Paciente> {
 
   // Método específico para buscar pacientes por nombre
   searchByName(nombre: string): Observable<CrudResponse<Paciente[]>> {
-    return this.http.get<CrudResponse<Paciente[]>>(`${this.baseUrl}/${this.endpoint}/search?nombre=${encodeURIComponent(nombre)}`);
+    return this.http.get<StandardResponse<any>>(`${this.baseUrl}/${this.endpoint}/search?nombre=${encodeURIComponent(nombre)}`).pipe(
+      map(response => {
+        const adaptedData = response.body.data[0];
+        return {
+          success: response.statusCode >= 200 && response.statusCode < 300,
+          data: adaptedData.pacientes || adaptedData,
+          total: adaptedData.total || (Array.isArray(adaptedData) ? adaptedData.length : 0),
+          message: response.body.intCode
+        };
+      })
+    );
   }
 
   // Método específico para obtener pacientes por género

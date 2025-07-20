@@ -6,8 +6,8 @@ import { BaseFormComponent, FormField } from '../../../shared/components/base-fo
 import { CrudResponse } from '../../../services/base-crud.service';
 import { UsuariosService, Usuario } from '../../../services/usuarios.service';
 import { AuthService } from '../../../services/auth.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import { ConfirmationService } from 'primeng/api';
+import { AlertService } from '../../../services/alert.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 interface UsuarioExtended extends Usuario {
@@ -17,8 +17,8 @@ interface UsuarioExtended extends Usuario {
 @Component({
   selector: 'app-usuarios-crud',
   standalone: true,
-  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ToastModule, ButtonModule, ConfirmDialogModule],
-  providers: [MessageService, ConfirmationService],
+  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ButtonModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   template: `
     <div class="usuarios-crud">
       <div class="crud-header">
@@ -189,18 +189,14 @@ export class UsuariosCrudComponent implements OnInit {
   constructor(
     private usuariosService: UsuariosService,
     private authService: AuthService,
-    private messageService: MessageService,
+    private alertService: AlertService,
     private confirmationService: ConfirmationService
   ) {}
   
   ngOnInit() {
     // Verificar si el usuario está autenticado
     if (!this.authService.isAuthenticated()) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Advertencia',
-        detail: 'Debe iniciar sesión para acceder a esta sección'
-      });
+      this.alertService.warning('Debe iniciar sesión para acceder a esta sección');
       return;
     }
     this.loadUsuarios();
@@ -232,11 +228,7 @@ export class UsuariosCrudComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading usuarios:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar usuarios'
-        });
+        this.alertService.errorLoad('usuarios', 'No se pudieron cargar los datos del servidor');
       }
     });
   }
@@ -284,20 +276,12 @@ export class UsuariosCrudComponent implements OnInit {
       accept: () => {
         this.usuariosService.delete(user.id_usuario!).subscribe({
           next: (response: CrudResponse<any>) => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Éxito',
-              detail: 'Usuario eliminado correctamente'
-            });
+            this.alertService.successDelete('Usuario');
             this.loadUsuarios();
           },
           error: (error: any) => {
             console.error('Error deleting usuario:', error);
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: 'Error al eliminar usuario'
-            });
+            this.alertService.errorDelete('usuario', 'No se pudo completar la operación');
           }
         });
       }
@@ -305,6 +289,67 @@ export class UsuariosCrudComponent implements OnInit {
   }
   
   saveUser(userData: UsuarioExtended) {
+    // Validaciones del lado del cliente (igual que en register)
+    const missingFields: string[] = [];
+    
+    if (!userData.nombre?.trim()) {
+      missingFields.push('Nombre');
+    }
+    if (!userData.apellido?.trim()) {
+      missingFields.push('Apellido');
+    }
+    if (!userData.email?.trim()) {
+      missingFields.push('Correo electrónico');
+    }
+    if (!this.isEditing && (!userData.password?.trim())) {
+      missingFields.push('Contraseña');
+    }
+    if (!userData.fecha_nacimiento) {
+      missingFields.push('Fecha de nacimiento');
+    }
+    if (!userData.id_rol) {
+      missingFields.push('Rol');
+    }
+
+    if (missingFields.length > 0) {
+      this.alertService.errorCreate('usuario', `Campos obligatorios faltantes: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Validar formato de email
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+     if (!emailRegex.test(userData.email || '')) {
+       this.alertService.errorCreate('usuario', 'Correo electrónico inválido. Por favor, ingrese un correo válido (ejemplo: usuario@dominio.com)');
+       return;
+     }
+
+    // Validar contraseña solo si no estamos editando o si se proporcionó una nueva contraseña
+     if (!this.isEditing || (userData.password && userData.password.trim() !== '')) {
+       const password = userData.password || '';
+       // Validar longitud de contraseña
+       if (password.length < 12) {
+         this.alertService.errorCreate('usuario', 'Contraseña muy corta. La contraseña debe tener al menos 12 caracteres');
+         return;
+       }
+
+       // Validar complejidad de contraseña
+       const hasUpperCase = /[A-Z]/.test(password);
+       const hasLowerCase = /[a-z]/.test(password);
+       const hasNumbers = /\d/.test(password);
+       const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password);
+      
+      const missingRequirements: string[] = [];
+      if (!hasUpperCase) missingRequirements.push('al menos una letra mayúscula');
+      if (!hasLowerCase) missingRequirements.push('al menos una letra minúscula');
+      if (!hasNumbers) missingRequirements.push('al menos un número');
+      if (!hasSpecialChar) missingRequirements.push('al menos un carácter especial (!@#$%^&*()_+-=[]{}|;:,.<>?)');
+      
+      if (missingRequirements.length > 0) {
+        this.alertService.errorCreate('usuario', `Contraseña no cumple los requisitos. Debe contener: ${missingRequirements.join(', ')}`);
+        return;
+      }
+    }
+
     this.loading = true;
     
     // Convertir fecha de Date a string en formato YYYY-MM-DD si es necesario
@@ -342,22 +387,71 @@ export class UsuariosCrudComponent implements OnInit {
     
     operation.subscribe({
       next: (response: CrudResponse<Usuario>) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: `Usuario ${this.isEditing ? 'actualizado' : 'creado'} correctamente`
-        });
+        if (this.isEditing) {
+          this.alertService.successUpdate('Usuario');
+        } else {
+          this.alertService.successCreate('Usuario');
+        }
         this.closeForm();
         this.loadUsuarios();
       },
       error: (error: any) => {
-        console.error('Error saving usuario:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: `Error al ${this.isEditing ? 'actualizar' : 'crear'} usuario`
-        });
-      },
+          console.error('Error saving usuario:', error);
+          
+          let errorMessage = '';
+          
+          // Manejar códigos de estado HTTP específicos (igual que en register)
+           if (error.status === 409) {
+             // Correo duplicado
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               errorMessage = error.error.body.data[0].error;
+             } else {
+               errorMessage = 'El correo electrónico ya está registrado. Por favor, use un correo diferente.';
+             }
+           } else if (error.status === 400) {
+             // Error de validación
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               const serverError = error.error.body.data[0].error;
+               // Verificar si es un error de correo duplicado
+               if (serverError && (serverError.toLowerCase().includes('email') || serverError.toLowerCase().includes('correo')) && 
+                   (serverError.toLowerCase().includes('registrado') || serverError.toLowerCase().includes('existe') || serverError.toLowerCase().includes('duplicado'))) {
+                 errorMessage = 'El correo electrónico ya está registrado. Por favor, use un correo diferente.';
+               } else {
+                 errorMessage = serverError || 'Los datos proporcionados no son válidos. Por favor, revise la información ingresada.';
+               }
+             } else {
+               errorMessage = 'Los datos proporcionados no son válidos. Por favor, revise la información ingresada.';
+             }
+           } else if (error.status === 500) {
+             // Error del servidor
+             errorMessage = 'Error interno del servidor. Por favor, intente nuevamente más tarde.';
+           } else if (error.status === 0) {
+             // Error de conexión
+             errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión a internet.';
+           } else {
+             // Otros errores
+             if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+               errorMessage = error.error.body.data[0].error || errorMessage;
+             } else if (error.message) {
+               errorMessage = error.message;
+             }
+           }
+          
+          // Si no se pudo extraer un mensaje específico, usar mensajes por defecto
+          if (!errorMessage) {
+            if (this.isEditing) {
+              errorMessage = 'Verifique que todos los datos sean válidos';
+            } else {
+              errorMessage = 'Verifique que el email no esté en uso y que todos los campos sean válidos';
+            }
+          }
+          
+          if (this.isEditing) {
+            this.alertService.errorUpdate('usuario', errorMessage);
+          } else {
+            this.alertService.errorCreate('usuario', errorMessage);
+          }
+        },
       complete: () => {
         this.loading = false;
       }

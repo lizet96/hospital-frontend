@@ -8,6 +8,7 @@ export interface Expediente {
   historial_clinico?: string;
   seguro?: string;
   id_paciente?: number;
+  paciente_nombre?: string; 
   paciente?: {
     id_usuario: number;
     nombre: string;

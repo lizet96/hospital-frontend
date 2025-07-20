@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
 export interface TableColumn {
   field: string;
   header: string;
-  type?: 'text' | 'date' | 'number' | 'boolean' | 'custom';
+  type?: 'text' | 'date' | 'datetime' | 'number' | 'boolean' | 'custom';
   sortable?: boolean;
   filterable?: boolean;
   width?: string;
@@ -80,6 +80,7 @@ export interface TableAction {
             <td *ngFor="let col of columns">
               <ng-container [ngSwitch]="col.type">
                 <span *ngSwitchCase="'date'">{{formatDate(item[col.field])}}</span>
+                <span *ngSwitchCase="'datetime'">{{formatDateTime(item[col.field])}}</span>
                 <span *ngSwitchCase="'boolean'">{{item[col.field] ? 'Sí' : 'No'}}</span>
                 <span *ngSwitchDefault>{{item[col.field]}}</span>
               </ng-container>
@@ -191,5 +192,17 @@ export class BaseTableComponent implements OnInit, OnChanges {
   formatDate(date: string): string {
     if (!date) return '';
     return new Date(date).toLocaleDateString('es-ES');
+  }
+
+  formatDateTime(date: string): string {
+    if (!date) return '';
+    
+    // Parsear la fecha manualmente para evitar conversiones automáticas
+    const dateStr = date.replace('T', ' ').replace('Z', '');
+    const [datePart, timePart] = dateStr.split(' ');
+    const [year, month, day] = datePart.split('-');
+    const [hour, minute] = timePart ? timePart.split(':') : ['00', '00'];
+    
+    return `${day}/${month}/${year} ${hour}:${minute}`;
   }
 }

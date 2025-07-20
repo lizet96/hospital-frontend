@@ -6,16 +6,15 @@ import { BaseFormComponent, FormField } from '../../../shared/components/base-fo
 import { ConsultoriosService, Consultorio } from '../../../services/consultorios.service';
 import { AuthService } from '../../../services/auth.service';
 import { CrudResponse } from '../../../services/base-crud.service';
-import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import { AlertService } from '../../../services/alert.service';
 
 // Consultorio interface is now imported from the service
 
 @Component({
   selector: 'app-consultorios-crud',
   standalone: true,
-  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ToastModule, ButtonModule],
-  providers: [MessageService],
+  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ButtonModule],
+  providers: [],
   template: `
     <div class="consultorios-crud">
       <div class="crud-header">
@@ -47,7 +46,7 @@ import { ToastModule } from 'primeng/toast';
         (cancel)="closeForm()">
       </app-base-form>
 
-      <p-toast></p-toast>
+
     </div>
   `,
   styles: [`
@@ -128,7 +127,7 @@ export class ConsultoriosCrudComponent implements OnInit {
   constructor(
     private consultoriosService: ConsultoriosService,
     private authService: AuthService,
-    private messageService: MessageService
+    private alertService: AlertService
   ) {}
 
   ngOnInit() {
@@ -182,11 +181,7 @@ export class ConsultoriosCrudComponent implements OnInit {
       },
       error: (_error: any) => {
         console.error('Error loading consultorios:', _error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar los consultorios'
-        });
+        this.alertService.errorLoad('consultorios');
         this.loading = false;
       }
     });
@@ -219,26 +214,33 @@ export class ConsultoriosCrudComponent implements OnInit {
     if (confirm('¿Está seguro de que desea eliminar este consultorio?')) {
       this.consultoriosService.delete(consultorio.id_consultorio!).subscribe({
         next: (_response: CrudResponse<any>) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Consultorio eliminado correctamente'
-          });
+          this.alertService.successDelete('consultorio');
           this.loadConsultorios();
         },
         error: (_error: any) => {
           console.error('Error deleting consultorio:', _error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al eliminar el consultorio'
-          });
+          this.alertService.errorDelete('consultorio');
         }
       });
     }
   }
 
   handleSave(consultorioData: Partial<Consultorio>) {
+    // Validaciones del lado del cliente
+    const missingFields: string[] = [];
+    
+    if (!consultorioData.nombre_numero?.trim()) {
+      missingFields.push('Nombre/Número del consultorio');
+    }
+    if (!consultorioData.ubicacion?.trim()) {
+      missingFields.push('Ubicación');
+    }
+
+    if (missingFields.length > 0) {
+      this.alertService.errorCreate('consultorio', `Campos obligatorios faltantes: ${missingFields.join(', ')}`);
+      return;
+    }
+
     this.formLoading = true;
     
     const operation = consultorioData.id_consultorio 
@@ -247,22 +249,66 @@ export class ConsultoriosCrudComponent implements OnInit {
 
     operation.subscribe({
       next: (_response: CrudResponse<Consultorio>) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: `Consultorio ${consultorioData.id_consultorio ? 'actualizado' : 'creado'} correctamente`
-        });
+        this.alertService[consultorioData.id_consultorio ? 'successUpdate' : 'successCreate']('consultorio');
         this.formLoading = false;
         this.closeForm();
         this.loadConsultorios();
       },
-      error: (_error: any) => {
-        console.error('Error saving consultorio:', _error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: `Error al ${consultorioData.id_consultorio ? 'actualizar' : 'crear'} el consultorio`
-        });
+      error: (error: any) => {
+        console.error('Error saving consultorio:', error);
+        
+        let errorMessage = '';
+        
+        // Manejar códigos de estado HTTP específicos
+        if (error.status === 409) {
+          // Conflicto - consultorio duplicado
+          if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+            const serverError = error.error.body.data[0].error;
+            if (serverError && (serverError.toLowerCase().includes('consultorio') || serverError.toLowerCase().includes('nombre') || serverError.toLowerCase().includes('duplicado') || serverError.toLowerCase().includes('existe'))) {
+              errorMessage = 'Ya existe un consultorio con ese nombre/número. Por favor, use un nombre diferente.';
+            } else {
+              errorMessage = serverError;
+            }
+          } else {
+            errorMessage = 'Ya existe un consultorio con ese nombre/número. Por favor, use un nombre diferente.';
+          }
+        } else if (error.status === 400) {
+          // Error de validación
+          if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+            const serverError = error.error.body.data[0].error;
+            if (serverError && (serverError.toLowerCase().includes('consultorio') || serverError.toLowerCase().includes('nombre') || serverError.toLowerCase().includes('duplicado') || serverError.toLowerCase().includes('existe'))) {
+              errorMessage = 'Ya existe un consultorio con ese nombre/número. Por favor, use un nombre diferente.';
+            } else {
+              errorMessage = serverError || 'Los datos proporcionados no son válidos. Verifique el nombre y ubicación del consultorio.';
+            }
+          } else {
+            errorMessage = 'Los datos proporcionados no son válidos. Verifique el nombre y ubicación del consultorio.';
+          }
+        } else if (error.status === 500) {
+          // Error del servidor
+          errorMessage = 'Error interno del servidor. Por favor, intente nuevamente más tarde.';
+        } else if (error.status === 0) {
+          // Error de conexión
+          errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión a internet.';
+        } else {
+          // Otros errores
+          if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+            errorMessage = error.error.body.data[0].error || errorMessage;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+        }
+        
+        // Si no se pudo extraer un mensaje específico, usar mensajes por defecto
+        if (!errorMessage) {
+          errorMessage = 'Verifique que todos los datos sean válidos';
+        }
+        
+        if (consultorioData.id_consultorio) {
+          this.alertService.errorUpdate('consultorio', errorMessage);
+        } else {
+          this.alertService.errorCreate('consultorio', errorMessage);
+        }
         this.formLoading = false;
       }
     });

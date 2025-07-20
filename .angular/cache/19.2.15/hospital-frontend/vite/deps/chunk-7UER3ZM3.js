@@ -1,20 +1,12 @@
 import {
-  animate,
-  animation,
-  style,
-  transition,
-  trigger,
-  useAnimation
-} from "./chunk-W334TBAC.js";
-import {
-  zindexutils
-} from "./chunk-KGCNUND3.js";
-import {
   Button
 } from "./chunk-6BSHYOWY.js";
 import {
   DomHandler
 } from "./chunk-5G7WYC4N.js";
+import {
+  zindexutils
+} from "./chunk-KGCNUND3.js";
 import {
   TimesIcon,
   WindowMaximizeIcon,
@@ -44,6 +36,14 @@ import {
   unblockBodyScroll,
   uuid
 } from "./chunk-GQIVO6LQ.js";
+import {
+  animate,
+  animation,
+  style,
+  transition,
+  trigger,
+  useAnimation
+} from "./chunk-SZJPLAKF.js";
 import {
   CommonModule,
   NgClass,
@@ -2270,4 +2270,4 @@ export {
   Dialog,
   DialogModule
 };
-//# sourceMappingURL=chunk-YCE22MGU.js.map
+//# sourceMappingURL=chunk-7UER3ZM3.js.map

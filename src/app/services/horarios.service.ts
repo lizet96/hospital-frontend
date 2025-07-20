@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BaseCrudService, CrudResponse } from './base-crud.service';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { BaseCrudService, CrudResponse, StandardResponse } from './base-crud.service';
 
 export interface Horario {
   id_horario?: number;
@@ -39,8 +40,51 @@ export class HorariosService extends BaseCrudService<Horario, CreateHorarioReque
   protected override endpoint = 'horarios';
 
   // Método específico para obtener horarios disponibles
-  getDisponibles(): Observable<CrudResponse<Horario[]>> {
-    return this.http.get<CrudResponse<Horario[]>>(`${this.baseUrl}/${this.endpoint}/disponibles`);
+  getDisponibles(): Observable<CrudResponse<any[]>> {
+    return this.http.get<StandardResponse<any>>(`${this.baseUrl}/horarios/disponibles`).pipe(
+      map(response => {
+        try {
+          console.log('Horarios disponibles raw response:', response);
+          // Verificar si la respuesta tiene la estructura esperada
+          if (!response || !response.body) {
+            console.warn('Horarios response missing expected structure:', response);
+            return {
+              success: false,
+              data: [],
+              total: 0,
+              message: 'Invalid response structure'
+            };
+          }
+          
+          // El backend devuelve {intCode, data} en response.body
+          const horarios = response.body.data || [];
+          
+          return {
+            success: response.statusCode >= 200 && response.statusCode < 300,
+            data: Array.isArray(horarios) ? horarios : [],
+            total: Array.isArray(horarios) ? horarios.length : 0,
+            message: response.body.intCode || 'Success'
+          };
+        } catch (error) {
+          console.error('Error processing horarios disponibles data:', error);
+          return {
+            success: false,
+            data: [],
+            total: 0,
+            message: 'Error processing horarios data'
+          };
+        }
+      }),
+      catchError(error => {
+        console.error('HTTP Error in horarios disponibles:', error);
+        return of({
+          success: false,
+          data: [],
+          total: 0,
+          message: `HTTP Error: ${error.status} - ${error.message}`
+        });
+      })
+    );
   }
 
   // Método específico para obtener horarios por médico

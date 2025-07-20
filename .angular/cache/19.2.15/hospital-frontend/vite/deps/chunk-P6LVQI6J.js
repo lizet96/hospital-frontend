@@ -1,19 +1,11 @@
 import {
-  animate,
-  animation,
-  style,
-  transition,
-  trigger,
-  useAnimation
-} from "./chunk-W334TBAC.js";
+  ConnectedOverlayScrollHandler,
+  DomHandler
+} from "./chunk-5G7WYC4N.js";
 import {
   ObjectUtils,
   zindexutils
 } from "./chunk-KGCNUND3.js";
-import {
-  ConnectedOverlayScrollHandler,
-  DomHandler
-} from "./chunk-5G7WYC4N.js";
 import {
   BaseComponent,
   BaseStyle
@@ -28,6 +20,14 @@ import {
   isTouchDevice,
   removeClass
 } from "./chunk-GQIVO6LQ.js";
+import {
+  animate,
+  animation,
+  style,
+  transition,
+  trigger,
+  useAnimation
+} from "./chunk-SZJPLAKF.js";
 import {
   CommonModule,
   NgClass,
@@ -1054,4 +1054,4 @@ export {
   Overlay,
   OverlayModule
 };
-//# sourceMappingURL=chunk-D3SU2PTD.js.map
+//# sourceMappingURL=chunk-P6LVQI6J.js.map

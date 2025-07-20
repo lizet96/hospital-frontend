@@ -1,4 +1,6 @@
 /* Estilos específicos del componente Login */
+
+/* Los estilos de mensajes ahora se manejan en el componente CustomAlertComponent */
 .w-full {
   width: 100%;
 }

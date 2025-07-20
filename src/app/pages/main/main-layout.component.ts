@@ -10,8 +10,9 @@ import { ConsultasCrudComponent } from '../crud/consultas/consultas-crud.compone
 import { ExpedientesCrudComponent } from '../crud/expedientes/expedientes-crud.component';
 import { HorariosCrudComponent } from '../crud/horarios/horarios-crud.component';
 import { ConsultoriosCrudComponent } from '../crud/consultorios/consultorios-crud.component';
-import { filter } from 'rxjs/operators';
 import { PacientesCrudComponent } from '../crud/pacientes/pacientes-crud.component';
+import { RecetasCrudComponent } from '../crud/recetas/recetas-crud.component';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-main-layout',
@@ -27,7 +28,8 @@ import { PacientesCrudComponent } from '../crud/pacientes/pacientes-crud.compone
     ExpedientesCrudComponent,
     HorariosCrudComponent,
     ConsultoriosCrudComponent,
-    PacientesCrudComponent  // Agregar esta línea
+    PacientesCrudComponent,
+    RecetasCrudComponent  // ✅ Agregar esta línea
   ],
   template: `
     <div class="main-layout">
@@ -71,7 +73,8 @@ import { PacientesCrudComponent } from '../crud/pacientes/pacientes-crud.compone
             <app-expedientes-crud *ngIf="currentView === 'expedientes'"></app-expedientes-crud>
             <app-horarios-crud *ngIf="currentView === 'horarios'"></app-horarios-crud>
             <app-consultorios-crud *ngIf="currentView === 'consultorios'"></app-consultorios-crud>
-            <app-pacientes-crud *ngIf="currentView === 'pacientes'"></app-pacientes-crud>  <!-- Reemplazar el placeholder -->
+            <app-pacientes-crud *ngIf="currentView === 'pacientes'"></app-pacientes-crud>
+            <app-recetas-crud *ngIf="currentView === 'recetas'"></app-recetas-crud>  <!-- ✅ Agregar esta línea -->
             
             <!-- Placeholder para Reportes -->
             <div *ngIf="currentView === 'reportes'" class="crud-placeholder">
@@ -229,6 +232,8 @@ export class MainLayoutComponent implements OnInit {
       this.currentView = 'consultorios';
     } else if (url.includes('/main/pacientes')) {
       this.currentView = 'pacientes';
+    } else if (url.includes('/main/recetas')) {  // ✅ Agregar esta condición
+      this.currentView = 'recetas';
     } else if (url.includes('/main/reportes')) {
       this.currentView = 'reportes';
     } else {

@@ -89,6 +89,107 @@ body {
   background: linear-gradient(135deg, var(--hospital-primary) 0%, var(--hospital-accent) 100%);
 }
 
+/* Estilos profesionales para mensajes Toast */
+::ng-deep .p-toast {
+  z-index: 9999 !important;
+}
+
+::ng-deep .p-toast .p-toast-message {
+  margin: 0 0 1rem 0 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 12px !important;
+  border: none !important;
+  backdrop-filter: blur(10px) !important;
+  min-width: 350px !important;
+  max-width: 500px !important;
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-message-content {
+  padding: 1.25rem 1.5rem !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 1rem !important;
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-message-icon {
+  font-size: 1.5rem !important;
+  margin-top: 0.125rem !important;
+  flex-shrink: 0 !important;
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-message-text {
+  flex: 1 !important;
+  line-height: 1.5 !important;
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-summary {
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  color: inherit !important;
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-detail {
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+  color: inherit !important;
+  opacity: 0.9 !important;
+  word-wrap: break-word !important;
+  white-space: pre-wrap !important;
+}
+
+/* Estilos específicos por tipo de mensaje */
+::ng-deep .p-toast .p-toast-message.p-toast-message-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+}
+
+::ng-deep .p-toast .p-toast-message.p-toast-message-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+}
+
+::ng-deep .p-toast .p-toast-message.p-toast-message-warn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+}
+
+::ng-deep .p-toast .p-toast-message.p-toast-message-info {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: white !important;
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-icon-close {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 1.1rem !important;
+  padding: 0.25rem !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+  margin-left: 0.5rem !important;
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-icon-close:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+/* Animaciones mejoradas */
+::ng-deep .p-toast .p-toast-message {
+  animation: slideInRight 0.3s ease-out !important;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Variables CSS para el tema hospitalario */
 :root {
   --hospital-primary: #2c5aa0;

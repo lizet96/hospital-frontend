@@ -3,31 +3,20 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { BaseTableComponent, TableColumn, TableAction } from '../../../shared/components/base-table.component';
 import { BaseFormComponent, FormField } from '../../../shared/components/base-form.component';
-import { BaseCrudService, CrudResponse } from '../../../services/base-crud.service';
+import { CrudResponse } from '../../../services/base-crud.service';
+import { ExpedientesService, Expediente } from '../../../services/expedientes.service';
 import { AuthService } from '../../../services/auth.service';
-import { MessageService } from 'primeng/api';
+import { AlertService } from '../../../services/alert.service';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-
-interface Expediente {
-  id_expediente?: number;
-  id_paciente: number;
-  numero_expediente: string;
-  fecha_apertura: string;
-  antecedentes_medicos?: string;
-  antecedentes_familiares?: string;
-  alergias?: string;
-  medicamentos_actuales?: string;
-  observaciones?: string;
-  estado: string;
-  created_at?: string;
-  updated_at?: string;
-}
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { UsuariosService } from '../../../services/usuarios.service';
 
 @Component({
   selector: 'app-expedientes-crud',
   standalone: true,
-  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ToastModule, ButtonModule],
-  providers: [MessageService],
+  imports: [CommonModule, BaseTableComponent, BaseFormComponent, ButtonModule, ToastModule, ConfirmDialogModule],
+  providers: [MessageService, ConfirmationService],
   template: `
     <div class="expedientes-crud">
       <div class="crud-header">
@@ -35,19 +24,17 @@ interface Expediente {
           <h2>Gestión de Expedientes</h2>
           <p>Administra los expedientes médicos de los pacientes</p>
         </div>
-        <p-button 
-          *ngIf="canCreate" 
-          label="Nuevo Expediente" 
-          icon="pi pi-plus" 
-          (onClick)="openCreateForm()"
-          class="p-button-success">
-        </p-button>
+        <!-- ✅ Eliminar este botón del header -->
       </div>
 
       <app-base-table
         [data]="expedientes"
         [columns]="columns"
         [actions]="actions"
+        [loading]="loading"
+        [canCreate]="canCreate"
+        [entityName]="'Expediente'"
+        (onCreate)="openCreateForm()"
         (onSort)="handleSort($event)"
         (onFilter)="handleFilter($event)">
       </app-base-table>
@@ -62,6 +49,7 @@ interface Expediente {
         (cancel)="closeForm()">
       </app-base-form>
 
+      <p-confirmDialog></p-confirmDialog>
       <p-toast></p-toast>
     </div>
   `,
@@ -76,6 +64,11 @@ interface Expediente {
       background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-secondary));
       border-radius: 12px;
       color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
     
     .crud-header h2 {
@@ -88,14 +81,6 @@ interface Expediente {
       margin: 0;
       opacity: 0.9;
       font-size: 1rem;
-    }
-    
-    .crud-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
     }
     
     @media (max-width: 768px) {
@@ -122,11 +107,10 @@ export class ExpedientesCrudComponent implements OnInit {
 
   columns: TableColumn[] = [
     { field: 'id_expediente', header: 'ID', sortable: true, filterable: true },
-    { field: 'numero_expediente', header: 'Número', sortable: true, filterable: true },
     { field: 'paciente_nombre', header: 'Paciente', sortable: true, filterable: true },
-    { field: 'fecha_apertura', header: 'Fecha Apertura', sortable: true, filterable: true, type: 'date' },
-    { field: 'estado', header: 'Estado', sortable: true, filterable: true },
-    { field: 'created_at', header: 'Creado', sortable: true, type: 'date' }
+    { field: 'antecedentes', header: 'Antecedentes', sortable: false, filterable: true },
+    { field: 'historial_clinico', header: 'Historial Clínico', sortable: false, filterable: true },
+    { field: 'seguro', header: 'Seguro', sortable: true, filterable: true },
   ];
 
   actions: TableAction[] = [];
@@ -140,59 +124,29 @@ export class ExpedientesCrudComponent implements OnInit {
       options: []
     },
     {
-      key: 'numero_expediente',
-      label: 'Número de Expediente',
-      type: 'text',
-      required: true
-    },
-    {
-      key: 'fecha_apertura',
-      label: 'Fecha de Apertura',
-      type: 'date',
-      required: true
-    },
-    {
-      key: 'antecedentes_medicos',
-      label: 'Antecedentes Médicos',
+      key: 'antecedentes',
+      label: 'Antecedentes',
       type: 'textarea'
     },
     {
-      key: 'antecedentes_familiares',
-      label: 'Antecedentes Familiares',
+      key: 'historial_clinico',
+      label: 'Historial Clínico',
       type: 'textarea'
     },
     {
-      key: 'alergias',
-      label: 'Alergias',
-      type: 'textarea'
-    },
-    {
-      key: 'medicamentos_actuales',
-      label: 'Medicamentos Actuales',
-      type: 'textarea'
-    },
-    {
-      key: 'observaciones',
-      label: 'Observaciones',
-      type: 'textarea'
-    },
-    {
-      key: 'estado',
-      label: 'Estado',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Activo', value: 'activo' },
-        { label: 'Inactivo', value: 'inactivo' },
-        { label: 'Archivado', value: 'archivado' }
-      ]
+      key: 'seguro',
+      label: 'Seguro',
+      type: 'text'
     }
   ];
 
   constructor(
-    private crudService: BaseCrudService<Expediente>,
+    private crudService: ExpedientesService,
     private authService: AuthService,
-    private messageService: MessageService
+    private alertService: AlertService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private usuariosService: UsuariosService
   ) {}
 
   ngOnInit() {
@@ -204,25 +158,25 @@ export class ExpedientesCrudComponent implements OnInit {
 
   private checkPermissions() {
     const user = this.authService.getCurrentUser();
+    console.log('🔍 Usuario actual:', user);
+    
     if (user) {
-      this.canView = this.authService.hasPermission('expedientes.view');
-      this.canCreate = this.authService.hasPermission('expedientes.create');
-      this.canEdit = this.authService.hasPermission('expedientes.edit');
-      this.canDelete = this.authService.hasPermission('expedientes.delete');
+      this.canView = this.authService.hasPermission('expedientes_read');
+      this.canCreate = this.authService.hasPermission('expedientes_create');
+      this.canEdit = this.authService.hasPermission('expedientes_update');
+      this.canDelete = this.authService.hasPermission('expedientes_delete');
+      
+      console.log('✅ Permisos verificados:');
+      console.log('  - canView (expedientes_read):', this.canView);
+      console.log('  - canCreate (expedientes_create):', this.canCreate);
+      console.log('  - canEdit (expedientes_update):', this.canEdit);
+      console.log('  - canDelete (expedientes_delete):', this.canDelete);
     }
   }
 
   private setupActions() {
     this.actions = [];
-    
-    if (this.canView) {
-      this.actions.push({
-        label: 'Ver',
-        icon: 'pi pi-eye',
-        action: (item: Expediente) => this.viewExpediente(item)
-      });
-    }
-    
+
     if (this.canEdit) {
       this.actions.push({
         label: 'Editar',
@@ -250,79 +204,26 @@ export class ExpedientesCrudComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading expedientes:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al cargar los expedientes'
-        });
+        this.alertService.errorLoad('expedientes', 'No se pudieron cargar los datos del servidor');
         this.loading = false;
       }
     });
   }
 
   private loadSelectOptions() {
-    this.crudService.getAll().subscribe({
+    // Cargar pacientes (usuarios con rol 4)
+    this.usuariosService.getByRole(4).subscribe({
       next: (response: CrudResponse<any[]>) => {
         const pacientesField = this.formFields.find(f => f.key === 'id_paciente');
         if (pacientesField && response.data) {
           pacientesField.options = response.data.map((p: any) => ({
-            label: `${p.nombre} ${p.apellido}`,
+            label: `${p.nombre} ${p.apellido || ''}`,
             value: p.id_usuario
           }));
         }
-      }
-    });
-  }
-
-  deleteExpediente(expediente: Expediente) {
-    if (confirm('¿Está seguro de que desea eliminar este expediente?')) {
-      this.crudService.delete(expediente.id_expediente!).subscribe({
-        next: (response: CrudResponse<any>) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Expediente eliminado correctamente'
-          });
-          this.loadExpedientes();
-        },
-        error: (error: any) => {
-          console.error('Error deleting expediente:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al eliminar el expediente'
-          });
-        }
-      });
-    }
-  }
-
-  handleSave(expedienteData: Partial<Expediente>) {
-    this.formLoading = true;
-    
-    const operation = expedienteData.id_expediente 
-      ? this.crudService.update(expedienteData.id_expediente, expedienteData)
-      : this.crudService.create(expedienteData);
-
-    operation.subscribe({
-      next: (response: CrudResponse<Expediente>) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: `Expediente ${expedienteData.id_expediente ? 'actualizado' : 'creado'} correctamente`
-        });
-        this.formLoading = false;
-        this.closeForm();
-        this.loadExpedientes();
       },
-      error: (error: any) => {
-        console.error('Error saving expediente:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: `Error al ${expedienteData.id_expediente ? 'actualizar' : 'crear'} el expediente`
-        });
-        this.formLoading = false;
+      error: (error) => {
+        console.error('Error loading pacientes:', error);
       }
     });
   }
@@ -331,11 +232,6 @@ export class ExpedientesCrudComponent implements OnInit {
     this.selectedExpediente = {};
     this.formTitle = 'Nuevo Expediente';
     this.showForm = true;
-  }
-
-  closeForm() {
-    this.showForm = false;
-    this.selectedExpediente = {};
   }
 
   viewExpediente(expediente: Expediente) {
@@ -348,6 +244,85 @@ export class ExpedientesCrudComponent implements OnInit {
     this.selectedExpediente = { ...expediente };
     this.formTitle = 'Editar Expediente';
     this.showForm = true;
+  }
+
+  deleteExpediente(expediente: Expediente): void {
+    this.confirmationService.confirm({
+      message: `¿Está seguro de que desea eliminar el expediente del paciente ${expediente.paciente_nombre}?`,
+      header: 'Confirmar eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.crudService.delete(expediente.id_expediente!).subscribe({
+          next: (response: CrudResponse<any>) => {
+            this.alertService.successDelete('Expediente');
+            this.loadExpedientes();
+          },
+          error: (error) => {
+            this.alertService.errorDelete('expediente', 'No se pudo completar la operación');
+          }
+        });
+      }
+    });
+  }
+
+  handleSave(expedienteData: Partial<Expediente>) {
+    // Validaciones
+    const missingFields: string[] = [];
+    
+    if (!expedienteData.id_paciente) {
+      missingFields.push('Paciente');
+    }
+    
+    if (missingFields.length > 0) {
+      this.alertService.errorCreate('expediente', `Campos obligatorios faltantes: ${missingFields.join(', ')}`);
+      return;
+    }
+    
+    this.formLoading = true;
+    
+    // ✅ Limpiar datos antes de enviar al backend
+    const cleanExpedienteData = {
+      antecedentes: expedienteData.antecedentes,
+      historial_clinico: expedienteData.historial_clinico,
+      seguro: expedienteData.seguro,
+      id_paciente: expedienteData.id_paciente
+    };
+    
+    if (this.selectedExpediente.id_expediente) {
+      // Actualizar
+      this.crudService.update(this.selectedExpediente.id_expediente, cleanExpedienteData).subscribe({
+        next: (response: CrudResponse<Expediente>) => {
+          this.alertService.successUpdate('Expediente');
+          this.loadExpedientes();
+          this.closeForm();
+          this.formLoading = false;
+        },
+        error: (error) => {
+          this.alertService.errorUpdate('expediente', 'No se pudo completar la operación');
+          this.formLoading = false;
+        }
+      });
+    } else {
+      // Crear
+      this.crudService.create(cleanExpedienteData).subscribe({
+        next: (response: CrudResponse<Expediente>) => {
+          this.alertService.successCreate('Expediente');
+          this.loadExpedientes();
+          this.closeForm();
+          this.formLoading = false;
+        },
+        error: (error) => {
+          this.alertService.errorCreate('expediente', 'No se pudo completar la operación');
+          this.formLoading = false;
+        }
+      });
+    }
+  }
+
+  closeForm() {
+    this.showForm = false;
+    this.selectedExpediente = {};
+    this.formLoading = false;
   }
 
   handleSort(event: any) {

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, of, map } from 'rxjs';
 import { environment } from '../../environments/environment';
-
+import { PermissionsService } from './permissions.service';
+import { forwardRef, Inject } from '@angular/core';
 export interface User {
   id: number;
   nombre: string;
@@ -68,11 +69,51 @@ export class AuthService {
   private initializationComplete = new BehaviorSubject<boolean>(false);
   public initialized$ = this.initializationComplete.asObservable();
 
+  // Agregar al constructor
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    @Inject(forwardRef(() => PermissionsService)) private permissionsService: PermissionsService
   ) {
-    // Verificar si hay un token guardado al inicializar
     this.checkStoredToken();
+  }
+  
+  // Modificar el método login
+  login(credentials: LoginRequest): Observable<BackendLoginResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials)
+      .pipe(
+        map(response => {
+          if (response.statusCode === 200 && response.body.data && response.body.data.length > 0) {
+            return response.body.data[0] as BackendLoginResponse;
+          }
+          throw new Error('Respuesta inválida del servidor');
+        }),
+        tap(loginResponse => {
+          if (!loginResponse.requires_mfa && loginResponse.access_token && loginResponse.usuario) {
+            this.setToken(loginResponse.access_token);
+            const user: User = {
+              id: loginResponse.usuario.id_usuario,
+              nombre: loginResponse.usuario.nombre,
+              apellido: loginResponse.usuario.apellido,
+              email: loginResponse.usuario.email,
+              rol: {
+                id: loginResponse.usuario.id_rol,
+                nombre: '',
+                permisos: []
+              }
+            };
+            this.currentUserSubject.next(user);
+            
+            // 🔥 CARGAR PERMISOS DESPUÉS DEL LOGIN
+            this.permissionsService.loadUserPermissions();
+          }
+        })
+      );
+  }
+  
+  // Modificar hasPermission para usar PermissionsService
+  hasPermission(permission: string): boolean {
+    // Usar PermissionsService en lugar del usuario local
+    return this.permissionsService.hasPermission(permission);
   }
 
   private checkStoredToken() {
@@ -104,37 +145,6 @@ export class AuthService {
           if (response.statusCode === 201 && response.body.intCode === 'S02') {
             // Para el registro, no se devuelven tokens automáticamente
             // El usuario necesitará hacer login después del registro
-          }
-        })
-      );
-  }
-
-  login(credentials: LoginRequest): Observable<BackendLoginResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials)
-      .pipe(
-        map(response => {
-          // Extraer los datos del formato del backend
-          if (response.statusCode === 200 && response.body.data && response.body.data.length > 0) {
-            return response.body.data[0] as BackendLoginResponse;
-          }
-          throw new Error('Respuesta inválida del servidor');
-        }),
-        tap(loginResponse => {
-          // Si el login es exitoso y no requiere MFA, guardar tokens
-          if (!loginResponse.requires_mfa && loginResponse.access_token && loginResponse.usuario) {
-            this.setToken(loginResponse.access_token);
-            const user: User = {
-              id: loginResponse.usuario.id_usuario,
-              nombre: loginResponse.usuario.nombre,
-              apellido: loginResponse.usuario.apellido,
-              email: loginResponse.usuario.email,
-              rol: {
-                id: loginResponse.usuario.id_rol,
-                nombre: '',
-                permisos: []
-              }
-            };
-            this.currentUserSubject.next(user);
           }
         })
       );
@@ -182,11 +192,6 @@ export class AuthService {
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
-  }
-
-  hasPermission(permission: string): boolean {
-    const user = this.getCurrentUser();
-    return user?.rol.permisos.includes(permission) || false;
   }
 
   getToken(): string | null {

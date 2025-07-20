@@ -10,10 +10,9 @@ import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 import { AuthService, LoginRequest } from '../../../services/auth.service';
 import { MfaComponent } from '../mfa/mfa.component';
+import { CustomAlertComponent } from '../../../shared/components/custom-alert/custom-alert.component';
 
 @Component({
   selector: 'app-login',
@@ -30,10 +29,10 @@ import { MfaComponent } from '../mfa/mfa.component';
     DividerModule,
     InputGroupModule,
     InputGroupAddonModule,
-    ToastModule,
-    MfaComponent
+    MfaComponent,
+    CustomAlertComponent
   ],
-  providers: [MessageService],
+  providers: [],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css', '../../../shared/styles/auth.styles.css']
 })
@@ -49,20 +48,32 @@ export class LoginComponent {
   qrCodeUrl = '';
   backupCodes: string[] = [];
   requiresMFA = false;
+  
+  // Variables para mensajes inline
+  showMessage = false;
+  messageText = '';
+  messageSeverity: 'success' | 'info' | 'warning' | 'error' = 'info';
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private messageService: MessageService
+    private router: Router
   ) {}
 
   onLogin() {
-    if (!this.loginData.email || !this.loginData.password) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Campos requeridos',
-        detail: 'Por favor, completa todos los campos'
-      });
+    // Validaciones detalladas antes de enviar
+    if (!this.loginData.email?.trim() || !this.loginData.password?.trim()) {
+      this.showMessage = true;
+      this.messageSeverity = 'warning';
+      this.messageText = 'El correo electrónico y la contraseña son obligatorios para iniciar sesión';
+      return;
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.loginData.email)) {
+      this.showMessage = true;
+      this.messageSeverity = 'warning';
+      this.messageText = 'Por favor, ingrese un correo electrónico válido';
       return;
     }
 
@@ -86,20 +97,16 @@ export class LoginComponent {
             this.backupCodes = response.backup_codes || [];
             this.showMFA = true;
             
-            this.messageService.add({
-              severity: 'info',
-              summary: 'Configuración MFA',
-              detail: 'Escanea el código QR para configurar la autenticación de dos factores'
-            });
+            this.showMessage = true;
+            this.messageSeverity = 'info';
+            this.messageText = 'Escanea el código QR para configurar la autenticación de dos factores';
           } else {
             // Usuario ya tiene MFA configurado - solo pedir código
             this.showMFA = true;
             
-            this.messageService.add({
-              severity: 'info',
-              summary: 'Código MFA requerido',
-              detail: 'Ingresa tu código de autenticación de dos factores'
-            });
+            this.showMessage = true;
+            this.messageSeverity = 'info';
+            this.messageText = 'Ingresa tu código de autenticación de dos factores';
           }
         } else if (response.access_token && response.usuario) {
           this.handleSuccessfulLogin(response);
@@ -109,33 +116,54 @@ export class LoginComponent {
         this.loading = false;
         let errorMessage = 'Error al iniciar sesión';
         
-        if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
-          errorMessage = error.error.body.data[0].error || errorMessage;
+        // Manejar códigos de estado HTTP específicos
+        if (error.status === 429) {
+          // Demasiados intentos
+          errorMessage = 'Demasiados intentos de login, intenta más tarde';
+        } else if (error.status === 401) {
+          // Credenciales incorrectas
+          if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+            errorMessage = error.error.body.data[0].error;
+          } else {
+            errorMessage = 'Credenciales incorrectas. Verifique su correo y contraseña.';
+          }
+        } else if (error.status === 400) {
+          // Error de validación
+          if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+            errorMessage = error.error.body.data[0].error;
+          } else {
+            errorMessage = 'Los datos proporcionados no son válidos. Por favor, revise la información ingresada.';
+          }
+        } else if (error.status === 500) {
+          // Error del servidor
+          errorMessage = 'Error interno del servidor. Por favor, intente nuevamente más tarde.';
+        } else if (error.status === 0) {
+          // Error de conexión
+          errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión a internet.';
+        } else {
+          // Otros errores
+          if (error.error && error.error.body && error.error.body.data && error.error.body.data.length > 0) {
+            errorMessage = error.error.body.data[0].error || errorMessage;
+          }
         }
         
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error de autenticación',
-          detail: errorMessage
-        });
+        this.showMessage = true;
+        this.messageSeverity = 'error';
+        this.messageText = errorMessage;
       }
     });
   }
 
   onGoogleLogin() {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Próximamente',
-      detail: 'Login con Google estará disponible pronto'
-    });
+    this.showMessage = true;
+    this.messageSeverity = 'info';
+    this.messageText = 'Login con Google estará disponible pronto';
   }
   
   handleSuccessfulLogin(response: any) {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Bienvenido',
-      detail: `Hola ${response.usuario.nombre} ${response.usuario.apellido}`
-    });
+    this.showMessage = true;
+    this.messageSeverity = 'success';
+    this.messageText = `Bienvenido ${response.usuario.nombre} ${response.usuario.apellido}`;
     
     // Guardar tokens y datos del usuario
     localStorage.setItem('access_token', response.access_token);
@@ -157,5 +185,10 @@ export class LoginComponent {
     this.requiresMFA = false;
     this.qrCodeUrl = '';
     this.backupCodes = [];
+  }
+  
+  hideMessage() {
+    this.showMessage = false;
+    this.messageText = '';
   }
 }
